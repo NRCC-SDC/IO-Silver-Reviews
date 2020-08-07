@@ -1,9 +1,21 @@
 import React from 'react';
+import Ratings from './Ratings.jsx';
+import Reviews from './Reviews.jsx';
 
-const App = () => (
-  <div>
-    <h1 id="title">Hello, World</h1>
-  </div>
-);
+class App extends React.Component {
+  constructor() {
+    super();
+  }
+
+  render() {
+    return (
+      <div id="app">
+        <h2 id="title">Ratings and Reviews</h2>
+        <Ratings />
+        <Reviews />
+      </div>
+    )
+  }
+}
 
 export default App;

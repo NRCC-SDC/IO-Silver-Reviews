@@ -5,7 +5,22 @@ import { configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 configure({ adapter: new Adapter() });
 
-test(`Should contain the title 'Hello, World'`, () => {
-  const wrapper = shallow(<App />);
-  expect(wrapper.find('#title').text()).toBe('Hello, World');
+describe('Basic Rendering', () => {
+  let wrapper;
+
+  beforeEach(() => {
+    wrapper = shallow(<App />);
+  });
+
+  test('Should contain a title', () => {
+    expect(wrapper.find('#title').text()).toBe('Ratings and Reviews');
+  });
+
+  test('Should contain a Ratings component', () => {
+    expect(wrapper.exists('Ratings')).toBe(true);
+  });
+
+  test('Should contain a Reviews component', () => {
+    expect(wrapper.exists('Reviews')).toBe(true);
+  });
 });

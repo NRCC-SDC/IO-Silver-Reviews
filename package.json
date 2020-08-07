@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node ./server/index.js",
     "start:dev": "nodemon ./server/index.js",
-    "build:dev": "webpack -d",
+    "build:dev": "webpack -d -w",
     "test": "jest --coverage"
   },
   "repository": {
