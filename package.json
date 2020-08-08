@@ -24,6 +24,8 @@
   },
   "homepage": "https://github.com/I-O-Silver/Ratings-and-Reviews#readme",
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "express": "^4.17.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
