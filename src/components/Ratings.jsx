@@ -1,5 +1,6 @@
 import React from 'react';
 import { Rating } from '@material-ui/lab';
+import { LinearProgress, Grid } from '@material-ui/core';
 
 class Ratings extends React.Component {
   constructor(props) {
@@ -31,20 +32,71 @@ class Ratings extends React.Component {
     const rating = this.calculateRating(ratings);
 
     return (
-      <div id="overview">
-        <h2 id="rating-number">{ rating ? rating : 'Be the first to rate this product' }</h2>
-        <Rating 
-          value={ rating ? rating : 0 }
-          precision={0.25}
-          readOnly
-        />
-      </div>
+      <Grid container item id="overview" alignItems='center'>
+        <Grid item xs={3}>
+          <h2 id="rating-number">{ rating ? rating : 'Be the first to rate this product' }</h2>
+        </Grid>
+        <Grid item>
+          <Rating 
+            value={ rating ? rating : 0 }
+            precision={0.25}
+            readOnly
+          />
+        </Grid>
+      </Grid>
     )
   }
 
+  calcBreakdowns(ratings = {}) {
+    if (Object.keys(ratings).length === 0) return new Array(5).fill(0);
+
+    const findTotal = (result, value) => {
+      if (ratings[value] === undefined) return result;
+
+      return result += ratings[value];
+    }
+
+    const totalRatings = [1, 2, 3, 4, 5].reduce(findTotal, 0);
+
+    const calculatePercentage = value => {
+      if (ratings[value] === undefined) return 0;
+      return (ratings[value] / totalRatings) * 100;
+    }
+
+    return [1, 2, 3, 4, 5].map(calculatePercentage);
+  }
+
   renderBreakdown() {
+    const { ratings } = this.props.meta ? this.props.meta : {};
+    const breakdowns = this.calcBreakdowns(ratings);
+
     return (
-      <div id="breakdown"></div>
+      <Grid container item id="breakdown">
+        {
+          breakdowns.map((percentage, index) => {
+            return (
+              <Grid 
+                container 
+                item 
+                key={index} 
+                className="breakdown-bar" 
+                style={{flexDirection: "row"}}
+                alignItems='center'
+              >
+                <Grid item md={3}>
+                  {index + 1} {index === 0 ? 'star' : 'stars'}
+                </Grid>
+                <Grid item md={9}>
+                  <LinearProgress 
+                    variant="determinate"
+                    value={percentage}
+                  />
+                </Grid>
+              </Grid>
+            )
+          })
+        }
+      </Grid>
     )
   }
 
@@ -56,11 +108,11 @@ class Ratings extends React.Component {
 
   render() {
     return(
-      <div id="ratings">
+      <Grid id="ratings" container item xs={3}>
         { this.renderOverview() }
         { this.renderBreakdown() }
         { this.renderCharacteristics() }
-      </div>
+      </Grid>
     ) 
   }
 }
