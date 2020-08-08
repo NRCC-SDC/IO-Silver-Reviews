@@ -28,7 +28,7 @@ class Ratings extends React.Component {
   }
 
   renderOverview() {
-    const { ratings } = this.props.meta ? this.props.meta : { ratings: {} };
+    const { ratings } = this.props.meta ? this.props.meta : {};
     const rating = this.calculateRating(ratings);
 
     return (
@@ -47,7 +47,7 @@ class Ratings extends React.Component {
     )
   }
 
-  calcBreakdowns(ratings) {
+  calcBreakdowns(ratings = {}) {
     if (Object.keys(ratings).length === 0) return new Array(5).fill(0);
 
     const findTotal = (result, value) => {
@@ -67,7 +67,7 @@ class Ratings extends React.Component {
   }
 
   renderBreakdown() {
-    const { ratings } = this.props.meta.ratings ? this.props.meta : { ratings: {} };
+    const { ratings } = this.props.meta.ratings ? this.props.meta : {};
     const breakdowns = this.calcBreakdowns(ratings);
     console.log(breakdowns)
 
