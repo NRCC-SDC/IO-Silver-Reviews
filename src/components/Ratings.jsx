@@ -1,5 +1,6 @@
 import React from 'react';
 import { Rating } from '@material-ui/lab';
+import { LinearProgress } from '@material-ui/core';
 
 class Ratings extends React.Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class Ratings extends React.Component {
   }
 
   renderOverview() {
-    const { ratings } = this.props.meta ? this.props.meta : {};
+    const { ratings } = this.props.meta ? this.props.meta : { ratings: {} };
     const rating = this.calculateRating(ratings);
 
     return (
@@ -42,9 +43,50 @@ class Ratings extends React.Component {
     )
   }
 
+  calcBreakdowns(ratings) {
+    if (Object.keys(ratings).length === 0) return new Array(5).fill(0);
+
+    const findTotal = (result, value) => {
+      if (ratings[value] === undefined) return result;
+
+      return result += ratings[value];
+    }
+
+    const totalRatings = [1, 2, 3, 4, 5].reduce(findTotal, 0);
+
+    const calculatePercentage = value => {
+      if (ratings[value] === undefined) return 0;
+      return (ratings[value] / totalRatings) * 100;
+    }
+
+    return [1, 2, 3, 4, 5].map(calculatePercentage);
+  }
+
   renderBreakdown() {
+    const { ratings } = this.props.meta.ratings ? this.props.meta : { ratings: {} };
+    const breakdowns = this.calcBreakdowns(ratings);
+    console.log(breakdowns)
+
     return (
-      <div id="breakdown"></div>
+      <div id="breakdown">
+        {
+          breakdowns.map((percentage, index) => {
+            return (
+              <div key={index} className="breakdown-bar" style={{flexDirection: "row"}}>
+                <p>{index + 1}</p>
+                <LinearProgress 
+                  variant="determinate"
+                  value={percentage}
+                  style={{
+                    maxWidth: "30%",
+                    padding: "6px 0"
+                  }}
+                />
+              </div>
+            )
+          })
+        }
+      </div>
     )
   }
 
