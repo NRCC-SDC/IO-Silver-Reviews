@@ -67,9 +67,8 @@ class Ratings extends React.Component {
   }
 
   renderBreakdown() {
-    const { ratings } = this.props.meta.ratings ? this.props.meta : {};
+    const { ratings } = this.props.meta ? this.props.meta : {};
     const breakdowns = this.calcBreakdowns(ratings);
-    console.log(breakdowns)
 
     return (
       <Grid container item id="breakdown">
@@ -109,7 +108,7 @@ class Ratings extends React.Component {
 
   render() {
     return(
-      <Grid container item xs={3}>
+      <Grid id="ratings" container item xs={3}>
         { this.renderOverview() }
         { this.renderBreakdown() }
         { this.renderCharacteristics() }

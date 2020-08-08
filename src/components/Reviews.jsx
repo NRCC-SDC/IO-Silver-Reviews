@@ -8,7 +8,7 @@ class Reviews extends React.Component {
   
   render() {
     return(
-      <Grid container item xs={8}>
+      <Grid id="reviews" container item xs={8}>
         <h2>Reviews Component</h2>
       </Grid>
     )
