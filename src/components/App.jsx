@@ -31,13 +31,9 @@ class App extends React.Component {
     return (
       <div id="app">
         <h2 id="title">Ratings and Reviews</h2>
-        <Grid container>
-          <Grid container item md={4}>
-            <Ratings meta={this.state.meta} />
-          </Grid>
-          <Grid container item md={8}>
-            <Reviews />
-          </Grid>
+        <Grid container spacing={2}>
+          <Ratings meta={this.state.meta} />
+          <Reviews />
         </Grid>
       </div>
     )
