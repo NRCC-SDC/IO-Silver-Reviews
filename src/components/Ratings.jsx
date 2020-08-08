@@ -1,6 +1,6 @@
 import React from 'react';
 import { Rating } from '@material-ui/lab';
-import { LinearProgress } from '@material-ui/core';
+import { LinearProgress, Grid } from '@material-ui/core';
 
 class Ratings extends React.Component {
   constructor(props) {
@@ -68,25 +68,32 @@ class Ratings extends React.Component {
     console.log(breakdowns)
 
     return (
-      <div id="breakdown">
+      <Grid container item id="breakdown">
         {
           breakdowns.map((percentage, index) => {
             return (
-              <div key={index} className="breakdown-bar" style={{flexDirection: "row"}}>
-                <p>{index + 1} {index === 0 ? 'star' : 'stars'}</p>
-                <LinearProgress 
-                  variant="determinate"
-                  value={percentage}
-                  style={{
-                    maxWidth: "30%",
-                    padding: "6px 0"
-                  }}
-                />
-              </div>
+              <Grid 
+                container 
+                item 
+                key={index} 
+                className="breakdown-bar" 
+                style={{flexDirection: "row"}}
+                alignItems='center'
+              >
+                <Grid item md={3}>
+                  {index + 1} {index === 0 ? 'star' : 'stars'}
+                </Grid>
+                <Grid item md={9}>
+                  <LinearProgress 
+                    variant="determinate"
+                    value={percentage}
+                  />
+                </Grid>
+              </Grid>
             )
           })
         }
-      </div>
+      </Grid>
     )
   }
 
