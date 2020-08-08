@@ -73,7 +73,7 @@ class Ratings extends React.Component {
           breakdowns.map((percentage, index) => {
             return (
               <div key={index} className="breakdown-bar" style={{flexDirection: "row"}}>
-                <p>{index + 1}</p>
+                <p>{index + 1} {index === 0 ? 'star' : 'stars'}</p>
                 <LinearProgress 
                   variant="determinate"
                   value={percentage}
