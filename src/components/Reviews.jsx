@@ -1,4 +1,5 @@
 import React from 'react';
+import { Grid } from '@material-ui/core';
 
 class Reviews extends React.Component {
   constructor(props) {
@@ -7,9 +8,9 @@ class Reviews extends React.Component {
   
   render() {
     return(
-      <div id="reviews">
-        <h3>Reviews Component</h3>
-      </div>
+      <Grid container item xs={8}>
+        <h2>Reviews Component</h2>
+      </Grid>
     )
   }
 }
