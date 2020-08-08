@@ -32,14 +32,18 @@ class Ratings extends React.Component {
     const rating = this.calculateRating(ratings);
 
     return (
-      <div id="overview">
-        <h2 id="rating-number">{ rating ? rating : 'Be the first to rate this product' }</h2>
-        <Rating 
-          value={ rating ? rating : 0 }
-          precision={0.25}
-          readOnly
-        />
-      </div>
+      <Grid container item id="overview" alignItems='center'>
+        <Grid item xs={3}>
+          <h2 id="rating-number">{ rating ? rating : 'Be the first to rate this product' }</h2>
+        </Grid>
+        <Grid item>
+          <Rating 
+            value={ rating ? rating : 0 }
+            precision={0.25}
+            readOnly
+          />
+        </Grid>
+      </Grid>
     )
   }
 
@@ -105,11 +109,11 @@ class Ratings extends React.Component {
 
   render() {
     return(
-      <div id="ratings">
+      <Grid container item xs={3}>
         { this.renderOverview() }
         { this.renderBreakdown() }
         { this.renderCharacteristics() }
-      </div>
+      </Grid>
     ) 
   }
 }
