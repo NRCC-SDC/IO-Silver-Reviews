@@ -8,7 +8,7 @@ class Reviews extends React.Component {
   render() {
     return(
       <div id="reviews">
-        <h3>Ratings Component</h3>
+        <h3>Reviews Component</h3>
       </div>
     )
   }
