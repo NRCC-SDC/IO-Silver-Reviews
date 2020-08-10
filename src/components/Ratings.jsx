@@ -8,7 +8,6 @@ class Ratings extends React.Component {
   }
 
   calculateRating(ratings = {}) {
-    // If ratings object is empty, return undefined
     if (Object.keys(ratings).length === 0) return;
 
     const createArray = (array, value) => {
@@ -18,13 +17,13 @@ class Ratings extends React.Component {
       return [...array, ...newArray];
     }
 
-    const calc = (result, value) => {
-      return result += value;
-    }
-
     const ratingsArray = [1, 2, 3, 4, 5].reduce(createArray, []);
 
-    return (ratingsArray.reduce(calc, 0) / ratingsArray.length).toPrecision(2);
+    const length = ratingsArray.length;
+    const total = ratingsArray.reduce((total, value) => total += value, 0)
+    const average = (total / length).toPrecision(2);
+
+    return average;
   }
 
   renderOverview() {
@@ -34,7 +33,7 @@ class Ratings extends React.Component {
     return (
       <Grid container item id="overview" alignItems='center'>
         <Grid item xs={3}>
-          <h2 id="rating-number">{ rating ? rating : 'Be the first to rate this product' }</h2>
+          <h2 id="rating-number">{ rating ? rating : 'No Reviews' }</h2>
         </Grid>
         <Grid item>
           <Rating 
@@ -56,19 +55,33 @@ class Ratings extends React.Component {
       return result += ratings[value];
     }
 
-    const totalRatings = [1, 2, 3, 4, 5].reduce(findTotal, 0);
-
     const calculatePercentage = value => {
       if (ratings[value] === undefined) return 0;
       return (ratings[value] / totalRatings) * 100;
     }
+    
+    const totalRatings = [1, 2, 3, 4, 5].reduce(findTotal, 0);
 
     return [1, 2, 3, 4, 5].map(calculatePercentage);
   }
 
+  calcRecommend(recommended = {}) {
+    if (Object.keys(recommended).length === 0) return;
+
+    const dislikes = recommended[0] || 0;
+    const likes = recommended[1] || 0;
+    const total = likes + dislikes;
+    const percentage = Math.floor((likes / total) * 100);
+
+    return percentage;
+  }
+
+
+
   renderBreakdown() {
-    const { ratings } = this.props.meta ? this.props.meta : {};
+    const { ratings, recommended } = this.props.meta ? this.props.meta : {};
     const breakdowns = this.calcBreakdowns(ratings);
+    const percentRecommend = this.calcRecommend(recommended);
 
     return (
       <Grid container item id="breakdown">
@@ -96,6 +109,14 @@ class Ratings extends React.Component {
             )
           })
         }
+        
+        <p>
+          { percentRecommend !== undefined
+            ? `${percentRecommend}% of users recommend this product`
+            : 'Nobody has recommended this product yet'
+          } 
+        
+        </p>
       </Grid>
     )
   }
