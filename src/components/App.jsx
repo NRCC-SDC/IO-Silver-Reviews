@@ -8,8 +8,9 @@ class App extends React.Component {
     super();
 
     this.state = {
-      product_id: Math.floor(Math.random() * 100),
-      meta: {}
+      product_id: 2,// Math.floor(Math.random() * 100),
+      meta: {},
+      reviews: {}
     }
   }
 
@@ -23,8 +24,19 @@ class App extends React.Component {
       });
   }
 
+  fetchReviews() {
+    fetch(`http://52.26.193.201:3000/reviews/${this.state.product_id}/list`)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          reviews: data
+        });
+      });
+  }
+
   componentDidMount() {
     this.fetchMetadata();
+    this.fetchReviews();
   }
 
   render() { 
@@ -33,7 +45,7 @@ class App extends React.Component {
         <h2 id="title">Ratings and Reviews</h2>
         <Grid container spacing={2}>
           <Ratings meta={this.state.meta} />
-          <Reviews />
+          <Reviews reviews={this.state.reviews} />
         </Grid>
       </div>
     )
