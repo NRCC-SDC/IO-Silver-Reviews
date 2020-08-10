@@ -1,5 +1,6 @@
 import React from 'react';
 import Ratings from '../src/components/Ratings';
+import renderer from 'react-test-renderer';
 
 import { configure, shallow, render } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -36,14 +37,14 @@ describe('Displaying metadata', () => {
           }
       }
     
-    wrapper = shallow(<Ratings />);
+    wrapper = shallow(<Ratings meta={data} />);
   });
 
   test('Should render an overview', () => {
     expect(wrapper.exists('#overview')).toBe(true);
   });
 
-  xtest('Should calculate rating', () => {
+  test('Should calculate rating', () => {
     // Props not being passed properly. Skipping for now
     expect(wrapper.find('#rating-number').text()).toBe('4.3');
   })
