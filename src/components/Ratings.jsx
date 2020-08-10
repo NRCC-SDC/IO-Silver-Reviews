@@ -1,34 +1,26 @@
 import React from 'react';
 import { Rating } from '@material-ui/lab';
-import { LinearProgress, Grid } from '@material-ui/core';
+import { LinearProgress, Grid, Typography } from '@material-ui/core';
 
 class Ratings extends React.Component {
   constructor(props) {
     super(props);
   }
 
-  calculateRating(ratings = {}) {
-    if (Object.keys(ratings).length === 0) return;
-
-    const createArray = (array, value) => {
-      if (ratings[value] === undefined) return array;
-      const length = ratings[value];
-      const newArray = new Array(length).fill(value);
-      return [...array, ...newArray];
-    }
-
-    const ratingsArray = [1, 2, 3, 4, 5].reduce(createArray, []);
-
-    const length = ratingsArray.length;
-    const total = ratingsArray.reduce((total, value) => total += value, 0)
-    const average = (total / length).toPrecision(2);
-
-    return average;
+  // Rendering
+  render() {
+    return(
+      <Grid id="ratings" container item xs={3} direction="column">
+        { this.renderOverview() }
+        { this.renderBreakdown() }
+        { this.renderCharacteristics() }
+      </Grid>
+    ) 
   }
-
+  
   renderOverview() {
     const { ratings } = this.props.meta ? this.props.meta : {};
-    const rating = this.calculateRating(ratings);
+    const rating = this.calcRating(ratings);
 
     return (
       <Grid container item id="overview" alignItems='center'>
@@ -45,38 +37,6 @@ class Ratings extends React.Component {
       </Grid>
     )
   }
-
-  calcBreakdowns(ratings = {}) {
-    if (Object.keys(ratings).length === 0) return new Array(5).fill(0);
-
-    const findTotal = (result, value) => {
-      if (ratings[value] === undefined) return result;
-
-      return result += ratings[value];
-    }
-
-    const calculatePercentage = value => {
-      if (ratings[value] === undefined) return 0;
-      return (ratings[value] / totalRatings) * 100;
-    }
-    
-    const totalRatings = [1, 2, 3, 4, 5].reduce(findTotal, 0);
-
-    return [1, 2, 3, 4, 5].map(calculatePercentage);
-  }
-
-  calcRecommend(recommended = {}) {
-    if (Object.keys(recommended).length === 0) return;
-
-    const dislikes = recommended[0] || 0;
-    const likes = recommended[1] || 0;
-    const total = likes + dislikes;
-    const percentage = Math.floor((likes / total) * 100);
-
-    return percentage;
-  }
-
-
 
   renderBreakdown() {
     const { ratings, recommended } = this.props.meta ? this.props.meta : {};
@@ -127,14 +87,54 @@ class Ratings extends React.Component {
     )
   }
 
-  render() {
-    return(
-      <Grid id="ratings" container item xs={3}>
-        { this.renderOverview() }
-        { this.renderBreakdown() }
-        { this.renderCharacteristics() }
-      </Grid>
-    ) 
+  // Utilities
+  calcRating(ratings = {}) {
+    if (Object.keys(ratings).length === 0) return;
+
+    const createArray = (array, value) => {
+      if (ratings[value] === undefined) return array;
+      const length = ratings[value];
+      const newArray = new Array(length).fill(value);
+      return [...array, ...newArray];
+    }
+
+    const ratingsArray = [1, 2, 3, 4, 5].reduce(createArray, []);
+
+    const length = ratingsArray.length;
+    const total = ratingsArray.reduce((total, value) => total += value, 0)
+    const average = (total / length).toPrecision(2);
+    
+    return average;
+  }
+  
+  calcBreakdowns(ratings = {}) {
+    if (Object.keys(ratings).length === 0) return new Array(5).fill(0);
+
+    const findTotal = (result, value) => {
+      if (ratings[value] === undefined) return result;
+
+      return result += ratings[value];
+    }
+
+    const calculatePercentage = value => {
+      if (ratings[value] === undefined) return 0;
+      return (ratings[value] / totalRatings) * 100;
+    }
+    
+    const totalRatings = [1, 2, 3, 4, 5].reduce(findTotal, 0);
+
+    return [1, 2, 3, 4, 5].map(calculatePercentage);
+  }
+
+  calcRecommend(recommended = {}) {
+    if (Object.keys(recommended).length === 0) return;
+
+    const dislikes = recommended[0] || 0;
+    const likes = recommended[1] || 0;
+    const total = likes + dislikes;
+    const percentage = Math.floor((likes / total) * 100);
+
+    return percentage;
   }
 }
 

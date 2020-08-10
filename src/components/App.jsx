@@ -8,7 +8,7 @@ class App extends React.Component {
     super();
 
     this.state = {
-      product_id: 2,// Math.floor(Math.random() * 100),
+      product_id: 10,//Math.floor(Math.random() * 100),
       meta: {},
       reviews: {}
     }
