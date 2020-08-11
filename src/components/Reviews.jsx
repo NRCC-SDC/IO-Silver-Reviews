@@ -8,7 +8,9 @@ class Reviews extends React.Component {
     super(props);
 
     this.state = {
-      showReviews: 2
+      showReviews: 2,
+      markedHelpful: {},
+      reported: {}
     };
   }
 
@@ -31,7 +33,7 @@ class Reviews extends React.Component {
     return (
       <Grid container item id="reviews-list" direction="column" spacing={2}>
         { reviews.map((review, index) => {
-          const { reviewer_name, rating, summary, body, recommend, date, helpfulness, photos, response } = review;
+          const { reviewer_name, rating, summary, body, recommend, date, helpfulness, photos, response, review_id } = review;
           return(
               <Grid key={index} className="user-review" container item direction="column">
                 <Grid container item justify="space-between">
@@ -73,7 +75,9 @@ class Reviews extends React.Component {
                 }
                 <Grid item>
                   <Typography variant="body2">
-                    Helpful? <Link underline="always">Yes</Link> ({helpfulness}) <Link underline="always">Report</Link>
+                    Helpful? <Link underline="always" onClick={() => this.markHelpful(review_id)}>Yes</Link>
+                    <span> ({helpfulness}) </span>
+                    <Link underline="always" onClick={() => this.reportReview(review_id)}>Report</Link>
                   </Typography>
                 </Grid>
               </Grid>
@@ -88,7 +92,7 @@ class Reviews extends React.Component {
             </Button>
           : null
         }
-          <Button id="add-review" xs={4} disableElevation variant="outlined" onClick={this.loadMoreReviews.bind(this)}>
+          <Button id="add-review" xs={4} disableElevation variant="outlined" onClick={this.addReview.bind(this)}>
             + Add Review
           </Button>
         </Grid>
@@ -102,6 +106,23 @@ class Reviews extends React.Component {
     this.setState({
       showReviews: newReviews
     });
+  }
+
+  addReview() {
+
+  }
+
+  markHelpful(review_id) {
+    if (this.state.markedHelpful[review_id] === true) return;
+    fetch(`http://52.26.193.201:3000/reviews/helpful/${review_id}/`, { method: 'PUT' })
+      .then(() => {
+        this.props.update();
+        this.setState({ markedHelpful: {...this.state.markedHelpful, [review_id]: true} })
+      });
+  }
+
+  reportReview(review_id) {
+    fetch(`http://52.26.193.201:3000/reviews/report/${review_id}/`, { method: 'PUT' });
   }
   
 }
