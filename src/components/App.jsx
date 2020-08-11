@@ -8,7 +8,7 @@ class App extends React.Component {
     super();
 
     this.state = {
-      product_id: 10,//Math.floor(Math.random() * 100),
+      product_id: 21,//Math.floor(Math.random() * 100),
       meta: {},
       reviews: {}
     }
@@ -45,7 +45,7 @@ class App extends React.Component {
         <h2 id="title">Ratings and Reviews</h2>
         <Grid container spacing={2}>
           <Ratings meta={this.state.meta} />
-          <Reviews reviews={this.state.reviews} />
+          <Reviews reviews={this.state.reviews} update={this.fetchReviews.bind(this)} />
         </Grid>
       </div>
     )
