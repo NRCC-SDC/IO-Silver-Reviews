@@ -1,6 +1,7 @@
 import React from 'react';
 import Ratings from './Ratings.jsx';
 import Reviews from './Reviews.jsx';
+import AddReview from './AddReview.jsx';
 import { Grid } from '@material-ui/core';
 
 class App extends React.Component {
@@ -8,9 +9,10 @@ class App extends React.Component {
     super();
 
     this.state = {
-      product_id: 21,//Math.floor(Math.random() * 100),
+      product_id: Math.floor(Math.random() * 100), //21
       meta: {},
-      reviews: {}
+      reviews: {},
+      modalIsOpen: false
     }
   }
 
@@ -39,14 +41,28 @@ class App extends React.Component {
     this.fetchReviews();
   }
 
+  addReview() {
+    this.setState({
+      modalIsOpen: true
+    });
+  }
+
+  closeModal() {
+    console.log('Closing modal')
+    this.setState({
+      modalIsOpen: false
+    });
+  }
+
   render() { 
     return (
       <div id="app">
         <h2 id="title">Ratings and Reviews</h2>
         <Grid container spacing={2}>
           <Ratings meta={this.state.meta} />
-          <Reviews reviews={this.state.reviews} update={this.fetchReviews.bind(this)} />
+          <Reviews reviews={this.state.reviews} update={this.fetchReviews.bind(this)} addReview={this.addReview.bind(this)} />
         </Grid>
+        <AddReview isOpen={this.state.modalIsOpen} closeModal={this.closeModal.bind(this)} meta={this.state.meta} />
       </div>
     )
   }

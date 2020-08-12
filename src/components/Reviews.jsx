@@ -1,4 +1,5 @@
 import React from 'react';
+import Modal from 'react-modal';
 import { Grid, Typography, Link, Paper, Button } from '@material-ui/core';
 import { Rating } from '@material-ui/lab';
 import moment from 'moment';
@@ -10,7 +11,8 @@ class Reviews extends React.Component {
     this.state = {
       showReviews: 2,
       markedHelpful: {},
-      reported: {}
+      reported: {},
+      modalIsOpen: false
     };
   }
 
@@ -92,7 +94,7 @@ class Reviews extends React.Component {
             </Button>
           : null
         }
-          <Button id="add-review" xs={4} disableElevation variant="outlined" onClick={this.addReview.bind(this)}>
+          <Button id="add-review" xs={4} disableElevation variant="outlined" onClick={this.props.addReview}>
             + Add Review
           </Button>
         </Grid>
@@ -106,10 +108,6 @@ class Reviews extends React.Component {
     this.setState({
       showReviews: newReviews
     });
-  }
-
-  addReview() {
-
   }
 
   markHelpful(review_id) {
