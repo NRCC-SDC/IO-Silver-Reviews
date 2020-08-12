@@ -20,22 +20,22 @@ describe('Basic Rendering', () => {
 
 describe('Displaying metadata', () => {
   let wrapper;
+  let data = {
+    product_id: '3',
+    ratings: {
+      4: 2,
+      5: 1
+    },
+    recommended: {},
+    characteristics: {
+      Fit:{ id: 6, value: null },
+      Length:{ id: 7, value: null },
+      Comfort:{ id: 8, value: null },
+      Quality:{ id: 9, value: null }
+    }
+  }
 
   beforeEach(() => {
-    let data = {
-        product_id: '3',
-        ratings: {
-          4: 2,
-          5: 1
-        },
-        recommended: {},
-        characteristics: {
-            Fit:{ id: 6, value: null },
-            Length:{ id: 7, value: null },
-            Comfort:{ id: 8, value: null },
-            Quality:{ id: 9, value: null }
-          }
-      }
     
     wrapper = shallow(<Ratings meta={data} />);
   });
