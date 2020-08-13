@@ -120,7 +120,8 @@ class Reviews extends React.Component {
   }
 
   reportReview(review_id) {
-    fetch(`http://52.26.193.201:3000/reviews/report/${review_id}/`, { method: 'PUT' });
+    fetch(`http://52.26.193.201:3000/reviews/report/${review_id}/`, { method: 'PUT' })
+      .then(() => this.props.update())
   }
   
 }
