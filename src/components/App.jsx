@@ -9,7 +9,7 @@ class App extends React.Component {
     super();
 
     this.state = {
-      product_id: Math.floor(Math.random() * 100), //21
+      product_id: 24,//Math.floor(Math.random() * 100), //21
       meta: {},
       reviews: {},
       modalIsOpen: false
@@ -62,7 +62,7 @@ class App extends React.Component {
           <Ratings meta={this.state.meta} />
           <Reviews reviews={this.state.reviews} update={this.fetchReviews.bind(this)} addReview={this.addReview.bind(this)} />
         </Grid>
-        <AddReview isOpen={this.state.modalIsOpen} closeModal={this.closeModal.bind(this)} meta={this.state.meta} />
+        <AddReview isOpen={this.state.modalIsOpen} closeModal={this.closeModal.bind(this)} meta={this.state.meta} update={this.fetchReviews.bind(this)} />
       </div>
     )
   }
