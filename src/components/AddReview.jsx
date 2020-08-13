@@ -122,7 +122,9 @@ class AddReview extends React.Component {
               <FormControlLabel value="No" control={<Radio />} label="no" />
             </RadioGroup>
          </FormControl>
-         {this.renderCharacteristics()}
+         <div id="review-characteristics">
+          {this.renderCharacteristics()}
+         </div>
          <FormControl>
             <FormLabel>Review Summary</FormLabel>
             <TextField 
