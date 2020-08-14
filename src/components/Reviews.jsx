@@ -1,40 +1,37 @@
-import React from 'react';
-import Modal from 'react-modal';
+import React, { useState } from 'react';
 import { Grid, Typography, Link, Paper, Button } from '@material-ui/core';
 import { Rating } from '@material-ui/lab';
 import moment from 'moment';
 
-class Reviews extends React.Component {
-  constructor(props) {
-    super(props);
+const Reviews = (props) => {
+  const [showReviews, setShowReviews] = useState(2);
 
-    this.state = {
-      showReviews: 2,
-      markedHelpful: {},
-      reported: {},
-      modalIsOpen: false
-    };
-  }
+  const { reviewsURL, reviews, update, addReview } = props;
 
-  render() {
-    return(
-      <Grid id="reviews" container item xs={9}>
-        { this.renderReviews() }
-      </Grid>
-    )
-  }
+  // Utilities
+  const loadMoreReviews = () => setShowReviews(showReviews + 2);
 
-  renderReviews() {
-    const ready = Object.keys(this.props.reviews).length;
-    if(!ready) return;
+  const markHelpful = (reviewId) => {
+    const url = reviewsURL + `/helpful/${review_id}/`;
+    const options = { method: 'PUT' };
 
-    const { results } = this.props.reviews ? this.props.reviews : null;
+    fetch(url, options).then(update);
+  };
 
-    const reviews = results.slice(0, this.state.showReviews);
+  const reportReview = (reviewId) => {
+    const url = reviewsURL + `report/${reviewId}`;
+    const options = { method: 'PUT' };
+
+    fetch(url, options).then(update);
+  } 
+
+  // Rendering
+  const renderReviews = (reviews = []) => {
+    const reviewsToShow = reviews.slice(0, showReviews);
 
     return (
       <Grid container item id="reviews-list" direction="column" spacing={2}>
-        { reviews.map((review, index) => {
+        { reviewsToShow.map((review, index) => {
           const { reviewer_name, rating, summary, body, recommend, date, helpfulness, photos, response, review_id } = review;
           return(
               <Grid key={index} className="user-review" container item direction="column">
@@ -77,9 +74,9 @@ class Reviews extends React.Component {
                 }
                 <Grid item>
                   <Typography variant="body2">
-                    Helpful? <Link underline="always" onClick={() => this.markHelpful(review_id)}>Yes</Link>
+                    Helpful? <Link underline="always" onClick={() => markHelpful(review_id)}>Yes</Link>
                     <span> ({helpfulness}) </span>
-                    <Link underline="always" onClick={() => this.reportReview(review_id)}>Report</Link>
+                    <Link underline="always" onClick={() => reportReview(review_id)}>Report</Link>
                   </Typography>
                 </Grid>
               </Grid>
@@ -87,43 +84,31 @@ class Reviews extends React.Component {
         }) }
         <Grid container item>
           { 
-          results.length > this.state.showReviews 
+          reviewsToShow.length < reviews.length 
           ?
-            <Button id="more-reviews" xs={4} disableElevation variant="outlined" onClick={this.loadMoreReviews.bind(this)}>
+            <Button id="more-reviews" xs={4} disableElevation variant="outlined" onClick={() => loadMoreReviews()}>
               More Reviews
             </Button>
           : null
         }
-          <Button id="add-review" xs={4} disableElevation variant="outlined" onClick={this.props.addReview}>
+          <Button id="add-review" xs={4} disableElevation variant="outlined" onClick={() => addReview()}>
             + Add Review
           </Button>
         </Grid>
       </Grid>
     )
+  };
 
+  const render = () => {
+    const { results } = Object.keys(reviews).length ? reviews : { results: [] };
+    return (
+      <Grid id="reviews" container item xs={9}>
+        { renderReviews(results) }
+      </Grid>
+    );
   }
 
-  loadMoreReviews() {
-    const newReviews = this.state.showReviews + 2;
-    this.setState({
-      showReviews: newReviews
-    });
-  }
-
-  markHelpful(review_id) {
-    if (this.state.markedHelpful[review_id] === true) return;
-    fetch(`http://52.26.193.201:3000/reviews/helpful/${review_id}/`, { method: 'PUT' })
-      .then(() => {
-        this.props.update();
-        this.setState({ markedHelpful: {...this.state.markedHelpful, [review_id]: true} })
-      });
-  }
-
-  reportReview(review_id) {
-    fetch(`http://52.26.193.201:3000/reviews/report/${review_id}/`, { method: 'PUT' })
-      .then(() => this.props.update())
-  }
-  
+  return render();
 }
 
 export default Reviews;
