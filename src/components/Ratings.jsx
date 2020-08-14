@@ -2,25 +2,67 @@ import React from 'react';
 import { Rating } from '@material-ui/lab';
 import { LinearProgress, Grid, Typography } from '@material-ui/core';
 
-class Ratings extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+const Ratings = (props) => {
+
+  const { meta } = props;
+
+  const { ratings, recommended } = Object.keys(meta).length > 0 ? meta : { ratings: {}, recommended: {} };
+
+  // Utilities
+  const calcRating = () => {
+    if (Object.keys(ratings).length === 0) return;
+
+    const createArray = (array, value) => {
+      if (ratings[value] === undefined) return array;
+      const length = ratings[value];
+      const newArray = new Array(length).fill(value);
+      return [...array, ...newArray];
+    }
+
+    const ratingsArray = [1, 2, 3, 4, 5].reduce(createArray, []);
+
+    const length = ratingsArray.length;
+    const total = ratingsArray.reduce((total, value) => total += value, 0)
+    const average = (total / length).toPrecision(2);
+    
+    return average;
+  };
+
+  const calcBreakdowns = () => {
+    if (Object.keys(ratings).length === 0) return new Array(5).fill(0);
+
+    const findTotal = (result, value) => {
+      if (ratings[value] === undefined) return result;
+
+      return result += ratings[value];
+    }
+
+    const calculatePercentage = value => {
+      if (ratings[value] === undefined) return 0;
+      return (ratings[value] / totalRatings) * 100;
+    }
+
+    const ratingValues = [1, 2, 3, 4, 5];
+    
+    const totalRatings = ratingValues.reduce(findTotal, 0);
+
+    return ratingValues.map(calculatePercentage);
+  };
+
+  const calcRecommended = () => {
+    if (Object.keys(recommended).length === 0) return;
+
+    const dislikes = recommended[0] || 0;
+    const likes = recommended[1] || 0;
+    const total = likes + dislikes;
+    const percentage = Math.floor((likes / total) * 100);
+
+    return percentage;
+  };
 
   // Rendering
-  render() {
-    return(
-      <Grid id="ratings" container item xs={3} direction="column">
-        { this.renderOverview() }
-        { this.renderBreakdown() }
-        { this.renderCharacteristics() }
-      </Grid>
-    ) 
-  }
-  
-  renderOverview() {
-    const { ratings } = this.props.meta ? this.props.meta : {};
-    const rating = this.calcRating(ratings);
+  const renderOverview = () => {
+    const rating = calcRating();
 
     return (
       <Grid container item id="overview" alignItems='center'>
@@ -35,13 +77,12 @@ class Ratings extends React.Component {
           />
         </Grid>
       </Grid>
-    )
-  }
+    );
+  };
 
-  renderBreakdown() {
-    const { ratings, recommended } = this.props.meta ? this.props.meta : {};
-    const breakdowns = this.calcBreakdowns(ratings);
-    const percentRecommend = this.calcRecommend(recommended);
+  const renderBreakdown = () => {
+    const breakdowns = calcBreakdowns();
+    const percentRecommended = calcRecommended();
 
     return (
       <Grid container item id="breakdown">
@@ -71,71 +112,31 @@ class Ratings extends React.Component {
         }
         
         <p>
-          { percentRecommend !== undefined
-            ? `${percentRecommend}% of users recommend this product`
+          { percentRecommended !== undefined
+            ? `${percentRecommended}% of users recommend this product`
             : 'Nobody has recommended this product yet'
           } 
         
         </p>
       </Grid>
-    )
-  }
+    );
+  };
 
-  renderCharacteristics() {
+  const renderCharacteristics = () => {
+
+  };
+
+  const render = () => {
     return (
-      <div id="characteristics"></div>
-    )
-  }
+      <Grid>
+        { renderOverview() }
+        { renderBreakdown() }
+        { renderCharacteristics() }
+      </Grid>
+    );
+  };
 
-  // Utilities
-  calcRating(ratings = {}) {
-    if (Object.keys(ratings).length === 0) return;
-
-    const createArray = (array, value) => {
-      if (ratings[value] === undefined) return array;
-      const length = ratings[value];
-      const newArray = new Array(length).fill(value);
-      return [...array, ...newArray];
-    }
-
-    const ratingsArray = [1, 2, 3, 4, 5].reduce(createArray, []);
-
-    const length = ratingsArray.length;
-    const total = ratingsArray.reduce((total, value) => total += value, 0)
-    const average = (total / length).toPrecision(2);
-    
-    return average;
-  }
-  
-  calcBreakdowns(ratings = {}) {
-    if (Object.keys(ratings).length === 0) return new Array(5).fill(0);
-
-    const findTotal = (result, value) => {
-      if (ratings[value] === undefined) return result;
-
-      return result += ratings[value];
-    }
-
-    const calculatePercentage = value => {
-      if (ratings[value] === undefined) return 0;
-      return (ratings[value] / totalRatings) * 100;
-    }
-    
-    const totalRatings = [1, 2, 3, 4, 5].reduce(findTotal, 0);
-
-    return [1, 2, 3, 4, 5].map(calculatePercentage);
-  }
-
-  calcRecommend(recommended = {}) {
-    if (Object.keys(recommended).length === 0) return;
-
-    const dislikes = recommended[0] || 0;
-    const likes = recommended[1] || 0;
-    const total = likes + dislikes;
-    const percentage = Math.floor((likes / total) * 100);
-
-    return percentage;
-  }
-}
+  return render();
+};
 
 export default Ratings;
