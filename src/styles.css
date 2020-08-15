@@ -13,6 +13,14 @@ body {
   background-color: #ebebeb;
 }
 
+#sort-menu-title {
+  margin-bottom: 0.5em;
+}
+
+#reviews-sort {
+  margin-bottom: 0.5em;
+}
+
 #reviews-buttons {
   display: flex;
   justify-content: space-between;

@@ -84,7 +84,7 @@ class Ratings extends React.Component {
   renderCharacteristics() {
     if(Object.keys(this.props.meta).length === 0) return;
 
-    const { characteristics } = this.props.meta;
+    const { characteristics } = this.props.meta.characteristics === undefined ? { characteristics: {} } : this.props.meta;
 
     const descriptions = {
       Size: ['Too Small', 'Perfect', 'Too Large'],

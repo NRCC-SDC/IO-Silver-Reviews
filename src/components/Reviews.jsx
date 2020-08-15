@@ -1,6 +1,5 @@
 import React from 'react';
-import Modal from 'react-modal';
-import { Grid, Typography, Link, Button } from '@material-ui/core';
+import { Grid, Typography, Link, Button, Select, MenuItem, InputLabel, FormControl } from '@material-ui/core';
 import { Rating } from '@material-ui/lab';
 import moment from 'moment';
 
@@ -19,9 +18,36 @@ class Reviews extends React.Component {
   render() {
     return(
       <Grid id="reviews" container item xs={9}>
+        { this.renderSort() }
         { this.renderReviews() }
       </Grid>
     )
+  }
+
+  renderSort() {
+    const sortOptions = ['newest', 'helpful', 'relevant'];
+    
+    const { sort } = this.props;
+
+    const totalReviews = Object.keys(this.props.reviews).length === 0 ? 0 : this.props.reviews.results.length;
+
+    const sortBy = this.props.sort === 'relevant' ? 'relevance' : this.props.sort;
+
+    return (
+      <div id="reviews-sort">
+        <Typography id="sort-menu-title" variant="h6">{totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}, sorted by {sortBy}</Typography>
+        <InputLabel id="sort-menu-label">Sort By</InputLabel>
+        <Select
+          labelId="sort-menu-label"
+          id="sort-menu"
+          value={sort || ''}
+          onChange={e => this.props.setSort(e.target.value)}
+        >
+          { sortOptions.map((sortBy, index) => <MenuItem key={index} value={sortBy}>{sortBy}</MenuItem>) }
+        </Select>
+      </div>
+    )
+
   }
 
   renderReviews() {
