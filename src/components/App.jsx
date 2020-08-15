@@ -1,48 +1,71 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Ratings from './Ratings.jsx';
 import Reviews from './Reviews.jsx';
 import AddReview from './AddReview.jsx';
 import { Grid } from '@material-ui/core';
 
-const App = () => {
-  const [productId, setProductId] = useState(24);
-  const [meta, setMeta] = useState({});
-  const [reviews, setReviews] = useState({});
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const reviewsURL = 'http://52.26.193.201:3000/reviews/';
+class App extends React.Component {
+  constructor() {
+    super();
 
-  const fetchMetadata = () => {
-    const url = reviewsURL + `${productId}/meta`;
-    fetch(url)
-      .then(res => res.json())
-      .then(data => setMeta(data));
+    this.state = {
+      product_id: 24,//Math.floor(Math.random() * 100), //21
+      meta: {},
+      reviews: {},
+      modalIsOpen: false
+    }
   }
 
-  const fetchReviews = () => {
-    const url = reviewsURL + `${productId}/list`;
-    fetch(url)
+  fetchMetadata() {
+    fetch(`http://52.26.193.201:3000/reviews/${this.state.product_id}/meta`)
       .then(res => res.json())
-      .then(data => setReviews(data));
+      .then(data => {
+        this.setState({
+          meta: data
+        });
+      });
   }
 
-  const openModal = () => setModalIsOpen(true);
+  fetchReviews() {
+    fetch(`http://52.26.193.201:3000/reviews/${this.state.product_id}/list`)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          reviews: data
+        });
+      });
+  }
 
-  const closeModal = () => setModalIsOpen(false);
+  componentDidMount() {
+    this.fetchMetadata();
+    this.fetchReviews();
+  }
 
-  fetchMetadata();
-  fetchReviews();
+  addReview() {
+    this.setState({
+      modalIsOpen: true
+    });
+  }
 
-  return (
-    <div id="app">
-      <h2 id="title">
+  closeModal() {
+    console.log('Closing modal')
+    this.setState({
+      modalIsOpen: false
+    });
+  }
+
+  render() { 
+    return (
+      <div id="app">
+        <h2 id="title">Ratings and Reviews</h2>
         <Grid container spacing={2}>
-          <Ratings meta={meta} />
-          <Reviews reviews={reviews} update={fetchReviews} addReview={openModal} />
+          <Ratings meta={this.state.meta} />
+          <Reviews reviews={this.state.reviews} update={this.fetchReviews.bind(this)} addReview={this.addReview.bind(this)} />
         </Grid>
-        <AddReview isOpen={modalIsOpen} closeModal={closeModal} meta={meta} update={fetchReviews} />
-      </h2>
-    </div>
-  );
-};
+        <AddReview isOpen={this.state.modalIsOpen} closeModal={this.closeModal.bind(this)} meta={this.state.meta} update={this.fetchReviews.bind(this)} />
+      </div>
+    )
+  }
+}
 
 export default App;

@@ -1,37 +1,40 @@
-import React, { useState } from 'react';
-import { Grid, Typography, Link, Paper, Button } from '@material-ui/core';
+import React from 'react';
+import Modal from 'react-modal';
+import { Grid, Typography, Link, Button } from '@material-ui/core';
 import { Rating } from '@material-ui/lab';
 import moment from 'moment';
 
-const Reviews = (props) => {
-  const [showReviews, setShowReviews] = useState(2);
+class Reviews extends React.Component {
+  constructor(props) {
+    super(props);
 
-  const { reviewsURL, reviews, update, addReview } = props;
+    this.state = {
+      showReviews: 2,
+      markedHelpful: {},
+      reported: {},
+      modalIsOpen: false
+    };
+  }
 
-  // Utilities
-  const loadMoreReviews = () => setShowReviews(showReviews + 2);
+  render() {
+    return(
+      <Grid id="reviews" container item xs={9}>
+        { this.renderReviews() }
+      </Grid>
+    )
+  }
 
-  const markHelpful = (reviewId) => {
-    const url = reviewsURL + `/helpful/${review_id}/`;
-    const options = { method: 'PUT' };
+  renderReviews() {
+    const ready = Object.keys(this.props.reviews).length;
+    if(!ready) return;
 
-    fetch(url, options).then(update);
-  };
+    const { results } = this.props.reviews ? this.props.reviews : null;
 
-  const reportReview = (reviewId) => {
-    const url = reviewsURL + `report/${reviewId}`;
-    const options = { method: 'PUT' };
-
-    fetch(url, options).then(update);
-  } 
-
-  // Rendering
-  const renderReviews = (reviews = []) => {
-    const reviewsToShow = reviews.slice(0, showReviews);
+    const reviews = results.slice(0, this.state.showReviews);
 
     return (
-      <Grid container item id="reviews-list" direction="column" spacing={2}>
-        { reviewsToShow.map((review, index) => {
+      <Grid container item id="reviews-list" direction="column">
+        { reviews.map((review, index) => {
           const { reviewer_name, rating, summary, body, recommend, date, helpfulness, photos, response, review_id } = review;
           return(
               <Grid key={index} className="user-review" container item direction="column">
@@ -67,48 +70,61 @@ const Reviews = (props) => {
                 {
                   (response && response !== 'null' && response !== '')
                   ?
-                  <Grid item>
-                    <Paper square variant="outlined" elevation={2}>{response}</Paper>
+                  <Grid className="response"  item>
+                    <Typography variant="h6">Response:</Typography>
+                    <Typography variant="body1">{response}</Typography>
                   </Grid>
                   : null
                 }
-                <Grid item>
+                <Grid className="review-footer" item>
                   <Typography variant="body2">
-                    Helpful? <Link underline="always" onClick={() => markHelpful(review_id)}>Yes</Link>
+                    Helpful? <Link underline="always" onClick={() => this.markHelpful(review_id)}>Yes</Link>
                     <span> ({helpfulness}) </span>
-                    <Link underline="always" onClick={() => reportReview(review_id)}>Report</Link>
+                    <Link underline="always" onClick={() => this.reportReview(review_id)}>Report</Link>
                   </Typography>
                 </Grid>
               </Grid>
           )
         }) }
-        <Grid container item>
+        <Grid id="reviews-buttons" container item>
           { 
-          reviewsToShow.length < reviews.length 
+          results.length > this.state.showReviews 
           ?
-            <Button id="more-reviews" xs={4} disableElevation variant="outlined" onClick={() => loadMoreReviews()}>
+            <Button id="more-reviews" xs={4} disableElevation variant="outlined" onClick={this.loadMoreReviews.bind(this)}>
               More Reviews
             </Button>
           : null
         }
-          <Button id="add-review" xs={4} disableElevation variant="outlined" onClick={() => addReview()}>
+          <Button id="add-review" xs={4} disableElevation variant="outlined" onClick={this.props.addReview}>
             + Add Review
           </Button>
         </Grid>
       </Grid>
     )
-  };
 
-  const render = () => {
-    const { results } = Object.keys(reviews).length ? reviews : { results: [] };
-    return (
-      <Grid id="reviews" container item xs={9}>
-        { renderReviews(results) }
-      </Grid>
-    );
   }
 
-  return render();
+  loadMoreReviews() {
+    const newReviews = this.state.showReviews + 2;
+    this.setState({
+      showReviews: newReviews
+    });
+  }
+
+  markHelpful(review_id) {
+    if (this.state.markedHelpful[review_id] === true) return;
+    fetch(`http://52.26.193.201:3000/reviews/helpful/${review_id}/`, { method: 'PUT' })
+      .then(() => {
+        this.props.update();
+        this.setState({ markedHelpful: {...this.state.markedHelpful, [review_id]: true} })
+      });
+  }
+
+  reportReview(review_id) {
+    fetch(`http://52.26.193.201:3000/reviews/report/${review_id}/`, { method: 'PUT' })
+      .then(() => this.props.update())
+  }
+  
 }
 
 export default Reviews;
