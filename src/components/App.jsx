@@ -12,7 +12,8 @@ class App extends React.Component {
       product_id: Math.floor(Math.random() * 100), //21
       meta: {},
       reviews: {},
-      modalIsOpen: false
+      modalIsOpen: false,
+      sort: 'newest'
     }
   }
 
@@ -26,8 +27,14 @@ class App extends React.Component {
       });
   }
 
-  fetchReviews() {
-    fetch(`http://52.26.193.201:3000/reviews/${this.state.product_id}/list`)
+  fetchReviews(sortBy = '') {
+    let params = '?count=100';
+
+    if(sortBy !== '') params += `sort=${sortBy}`;
+
+    console.log('Fetching reviews from:', `/reviews/${this.state.product_id}/list${params}`);
+
+    fetch(`http://52.26.193.201:3000/reviews/${this.state.product_id}/list${params}`)
       .then(res => res.json())
       .then(data => {
         this.setState({
@@ -48,10 +55,14 @@ class App extends React.Component {
   }
 
   closeModal() {
-    console.log('Closing modal')
     this.setState({
       modalIsOpen: false
     });
+  }
+
+  setSort(value) {
+    this.setState({sort: value});
+    this.fetchReviews(value);
   }
 
   render() { 
@@ -60,7 +71,7 @@ class App extends React.Component {
         <h2 id="title">Ratings and Reviews</h2>
         <Grid container spacing={4}>
           <Ratings meta={this.state.meta} />
-          <Reviews reviews={this.state.reviews} update={this.fetchReviews.bind(this)} addReview={this.addReview.bind(this)} />
+          <Reviews reviews={this.state.reviews} update={this.fetchReviews.bind(this)} addReview={this.addReview.bind(this)} sort={this.state.sort} setSort={this.setSort.bind(this)} />
         </Grid>
         <AddReview isOpen={this.state.modalIsOpen} closeModal={this.closeModal.bind(this)} meta={this.state.meta} update={this.fetchReviews.bind(this)} />
       </div>
