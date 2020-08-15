@@ -54,7 +54,9 @@ class Reviews extends React.Component {
     const ready = Object.keys(this.props.reviews).length;
     if(!ready) return;
 
-    const { results } = this.props.reviews ? this.props.reviews : null;
+    let { results } = this.props.reviews ? this.props.reviews : null;
+
+    if(this.props.filterBy) results = results.filter(review => review.rating === this.props.filterBy);
 
     const reviews = results.slice(0, this.state.showReviews);
 
