@@ -96,19 +96,19 @@ class Ratings extends React.Component {
 
     return (
       <div id="characteristics">
-        { Object.entries(characteristics).map(([characteristic, {id, value}]) => {
+        { Object.entries(characteristics).map(([characteristic, {id, value}], index) => {
           const percentage = (value / 5.0) * 100;
 
           return (
-            <Grid container className="characteristic" spacing={2}>
+            <Grid key={index} container className="characteristic" spacing={2}>
               <Grid item xs={3} className="characteristic-name">{characteristic}</Grid>
               <Grid item xs={9} className="characteristic-bar-container">
                 <div className="characteristic-marker" style={{position: 'relative', left: `${percentage}%`}} />
                 <div className="characteristic-bar" />
                 <div className="characteristic-description-container">
-                  { descriptions[characteristic].map(description => {
+                  { descriptions[characteristic].map((description, index) => {
                     return (
-                      <div className="characteristic-description">{description}</div>
+                      <div key={index} className="characteristic-description">{description}</div>
                     )
                   }) }
                 </div>
