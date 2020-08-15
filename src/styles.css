@@ -26,6 +26,14 @@ body {
   justify-content: space-between;
 }
 
+.breakdown-number {
+  color: black;
+}
+
+.breakdown-number:visited {
+  color: black;
+}
+
 #review-modal {
   width: 60vw;
 }

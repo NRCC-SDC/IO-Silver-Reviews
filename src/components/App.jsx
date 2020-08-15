@@ -13,7 +13,8 @@ class App extends React.Component {
       meta: {},
       reviews: {},
       modalIsOpen: false,
-      sort: 'newest'
+      sort: 'newest',
+      filterBy: undefined
     }
   }
 
@@ -31,8 +32,6 @@ class App extends React.Component {
     let params = '?count=100';
 
     if(sortBy !== '') params += `sort=${sortBy}`;
-
-    console.log('Fetching reviews from:', `/reviews/${this.state.product_id}/list${params}`);
 
     fetch(`http://52.26.193.201:3000/reviews/${this.state.product_id}/list${params}`)
       .then(res => res.json())
@@ -65,13 +64,27 @@ class App extends React.Component {
     this.fetchReviews(value);
   }
 
+  setFilter(value) {
+    this.setState({ filterBy: value });
+  }
+
   render() { 
     return (
       <div id="app">
         <h2 id="title">Ratings and Reviews</h2>
         <Grid container spacing={4}>
-          <Ratings meta={this.state.meta} />
-          <Reviews reviews={this.state.reviews} update={this.fetchReviews.bind(this)} addReview={this.addReview.bind(this)} sort={this.state.sort} setSort={this.setSort.bind(this)} />
+          <Ratings 
+            meta={this.state.meta} 
+            setFilter={this.setFilter.bind(this)}
+          />
+          <Reviews 
+            reviews={this.state.reviews} 
+            update={this.fetchReviews.bind(this)} 
+            addReview={this.addReview.bind(this)} 
+            sort={this.state.sort} 
+            setSort={this.setSort.bind(this)} 
+            filterBy={this.state.filterBy}          
+          />
         </Grid>
         <AddReview isOpen={this.state.modalIsOpen} closeModal={this.closeModal.bind(this)} meta={this.state.meta} update={this.fetchReviews.bind(this)} />
       </div>

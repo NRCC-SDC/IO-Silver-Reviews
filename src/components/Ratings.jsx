@@ -57,7 +57,9 @@ class Ratings extends React.Component {
                 alignItems='center'
               >
                 <Grid item md={3}>
-                  {index + 1} {index === 0 ? 'star' : 'stars'}
+                  <a href='#' className="breakdown-number" onClick={() => this.props.setFilter(index + 1)}>
+                    {index + 1} {index === 0 ? 'star' : 'stars'}
+                  </a>
                 </Grid>
                 <Grid item md={9}>
                   <LinearProgress 
