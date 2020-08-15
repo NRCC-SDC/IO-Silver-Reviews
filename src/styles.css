@@ -1,5 +1,5 @@
 body {
-  margin: 0 20%;
+  margin: 0 15%;
 }
 
 .user-review {
@@ -67,4 +67,51 @@ body {
 
 .MuiLinearProgress-colorPrimary {
   background-color: #c2c2c2 !important;
+}
+
+#breakdown {
+  margin-bottom: 0.5em;
+}
+
+#percent-recommend {
+  padding: 0.5em 0;
+}
+
+.characteristic {
+  margin-top: 1em;
+  display: flex;
+}
+
+.characteristic-bar-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.characteristic-bar {
+  width: auto;
+  height: 4px;
+  background-color: #c2c2c2;
+}
+
+.characteristic-marker-container {
+  display: inline-block;
+}
+
+.characteristic-marker {
+  width: 0; 
+  height: 0; 
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  
+  border-top: 5px solid #333;
+}
+
+
+.characteristic-description-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.characteristic-description {
+  font-size: 0.75em;
 }

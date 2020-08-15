@@ -70,20 +70,54 @@ class Ratings extends React.Component {
           })
         }
         
-        <p>
+        <Typography variant="body2" id="percent-recommend">
           { percentRecommend !== undefined
             ? `${percentRecommend}% of users recommend this product`
             : 'Nobody has recommended this product yet'
           } 
         
-        </p>
+        </Typography>
       </Grid>
     )
   }
 
   renderCharacteristics() {
+    if(Object.keys(this.props.meta).length === 0) return;
+
+    const { characteristics } = this.props.meta;
+
+    const descriptions = {
+      Size: ['Too Small', 'Perfect', 'Too Large'],
+      Comfort: ['Poor', 'Perfect'],
+      Quality: ['Poor', 'Perfect'],
+      Fit: ['Too Tight', 'Perfect', 'Too Baggy'],
+      Length: ['Too Short', 'Perfect', 'Too Long']
+    }
+
     return (
-      <div id="characteristics"></div>
+      <div id="characteristics">
+        { Object.entries(characteristics).map(([characteristic, {id, value}], index) => {
+          const percentage = (value / 5.0) * 100;
+
+          return (
+            <Grid key={index} container className="characteristic" spacing={2}>
+              <Grid item xs={3} className="characteristic-name">{characteristic}</Grid>
+              <Grid item xs={9} className="characteristic-bar-container">
+                <div className="characteristic-marker" style={{position: 'relative', left: `${percentage}%`}} />
+                <div className="characteristic-bar" />
+                <div className="characteristic-description-container">
+                  { descriptions[characteristic].map((description, index) => {
+                    return (
+                      <div key={index} className="characteristic-description">{description}</div>
+                    )
+                  }) }
+                </div>
+              </Grid>
+            </Grid>
+            )
+          }) 
+        }
+      </div>
     )
   }
 
