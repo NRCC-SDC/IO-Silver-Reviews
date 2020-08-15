@@ -1,0 +1,70 @@
+body {
+  margin: 0 20%;
+}
+
+.user-review {
+  border-bottom: 1px solid black;
+  margin-bottom: 1em !important;
+}
+
+.response {
+  margin-top: 10px !important;
+  padding: 0.5em;
+  background-color: #ebebeb;
+}
+
+#reviews-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+#review-modal {
+  width: 60vw;
+}
+
+#review-user-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 1em;
+  margin: 0 2em;
+  margin-bottom: 1em;
+}
+
+#review-overview {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 1em;
+  margin: 0 2em;
+  margin-bottom: 1em;
+}
+
+#review-characteristics {
+  margin: 1em 2em !important;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 1em;
+}
+
+.review-footer {
+  padding: 6px 0;
+}
+
+.review-body {
+  margin: 1em 0 !important;
+}
+
+/* .review-footer {
+  margin: 1em 0 !important;
+} */
+
+#review-submit {
+  width: 100%;
+}
+
+.MuiLinearProgress-barColorPrimary {
+  background-color: #4caf50 !important;
+}
+
+.MuiLinearProgress-colorPrimary {
+  background-color: #c2c2c2 !important;
+}

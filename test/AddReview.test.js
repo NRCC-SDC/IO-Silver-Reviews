@@ -25,7 +25,7 @@ describe('Basic Rendering', () => {
   }
 
   beforeEach(() => {
-    wrapper = shallow(<AddReview meta={data} />);
+    wrapper = shallow(<AddReview isOpen={true} meta={data} />);
   });
 
   test('Should contain overall rating element', () => {

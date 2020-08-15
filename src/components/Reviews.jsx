@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import { Grid, Typography, Link, Paper, Button } from '@material-ui/core';
+import { Grid, Typography, Link, Button } from '@material-ui/core';
 import { Rating } from '@material-ui/lab';
 import moment from 'moment';
 
@@ -33,7 +33,7 @@ class Reviews extends React.Component {
     const reviews = results.slice(0, this.state.showReviews);
 
     return (
-      <Grid container item id="reviews-list" direction="column" spacing={2}>
+      <Grid container item id="reviews-list" direction="column">
         { reviews.map((review, index) => {
           const { reviewer_name, rating, summary, body, recommend, date, helpfulness, photos, response, review_id } = review;
           return(
@@ -70,12 +70,13 @@ class Reviews extends React.Component {
                 {
                   (response && response !== 'null' && response !== '')
                   ?
-                  <Grid item>
-                    <Paper square variant="outlined" elevation={2}>{response}</Paper>
+                  <Grid className="response"  item>
+                    <Typography variant="h6">Response:</Typography>
+                    <Typography variant="body1">{response}</Typography>
                   </Grid>
                   : null
                 }
-                <Grid item>
+                <Grid className="review-footer" item>
                   <Typography variant="body2">
                     Helpful? <Link underline="always" onClick={() => this.markHelpful(review_id)}>Yes</Link>
                     <span> ({helpfulness}) </span>
@@ -85,7 +86,7 @@ class Reviews extends React.Component {
               </Grid>
           )
         }) }
-        <Grid container item>
+        <Grid id="reviews-buttons" container item>
           { 
           results.length > this.state.showReviews 
           ?

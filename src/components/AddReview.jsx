@@ -10,7 +10,8 @@ import {  Button,
           FormControl, 
           FormControlLabel,
           FormLabel,
-          TextField
+          TextField,
+          Typography
         } from '@material-ui/core';
 
 class AddReview extends React.Component {
@@ -53,103 +54,124 @@ class AddReview extends React.Component {
         onClose={() => this.props.closeModal()} 
         aria-labelledby="review-title"
         aria-describedby="review-subtitle"
+        maxWidth="lg"
       >
        <DialogTitle>Write Your Review</DialogTitle> 
        <DialogContent>
          <DialogContentText>About the [product name]</DialogContentText>
        </DialogContent>
        <DialogContent>
-         <FormControl 
-          required
-          error={ this.state.errors.name }
-         >
-           <FormLabel>Your Name:</FormLabel>
-           <TextField
-            id="review-name"
-            label="Your Name"
-            value={ this.state.name || '' }
-            onChange={e => this.setState({ name: e.target.value })}
-            variant="outlined"
-           />
-         </FormControl>
-         <FormControl
-          required
-          error={ this.state.errors.email }
-         >
-           <FormLabel>Email:</FormLabel>
-           <TextField 
-            id="review-email"
-            label="Email"
-            value={this.state.email}
-            onChange={e => this.setState({ email: e.target.value })}
-            variant="outlined"
-           />
-         </FormControl>
-         <FormControl 
-          required
-          error={this.state.errors.rating}
-         >
-           <FormLabel>Overall Rating:</FormLabel>
-            <RadioGroup 
-              row 
-              id="overall-rating" 
-              aria-label="overall-rating" 
-              name="overall-rating-group"
-              value={ this.state.rating || '' }
-              onChange={ e => this.setState({ rating: e.target.value }) }
-            >
-              <FormControlLabel value='1' control={<Radio />} label='1' />
-              <FormControlLabel value='2' control={<Radio />} label='2' />
-              <FormControlLabel value='3' control={<Radio />} label='3' />
-              <FormControlLabel value='4' control={<Radio />} label='4' />
-              <FormControlLabel value='5' control={<Radio />} label='5' />
-            </RadioGroup>
-         </FormControl>
-         <FormControl 
-          required
-          error={this.state.errors.recommend}
-         >
-           <FormLabel>Would you recommend this product?</FormLabel>
-            <RadioGroup 
-              row 
-              id="review-recommend" 
-              aria-label="recommend" 
-              name="recommend-group"
-              value={ this.state.recommend || '' }
-              onClick={e => this.setState({ recommend: e.target.value })}
-            >
-              <FormControlLabel value="Yes" control={<Radio />} label="yes" />
-              <FormControlLabel value="No" control={<Radio />} label="no" />
-            </RadioGroup>
-         </FormControl>
-         <div id="review-characteristics">
-          {this.renderCharacteristics()}
-         </div>
-         <FormControl>
-            <FormLabel>Review Summary</FormLabel>
-            <TextField 
-              id="review-summary"
-              label="Review Summary"
-              value={this.state.summary}
-              onChange={e => this.setState({ summary: e.target.value })}
+         <div id="review-user-info">
+          <FormControl 
+            required
+            error={ this.state.errors.name }
+          >
+            { 
+              this.state.errors.name 
+              ?
+              <Typography variant="body2" style={{color: "red"}}>Name is required</Typography>
+              : null
+            }
+            <TextField
+              id="review-name"
+              label="Your Name"
+              value={ this.state.name || '' }
+              onChange={e => this.setState({ name: e.target.value })}
               variant="outlined"
             />
           </FormControl>
           <FormControl
             required
-            error={this.state.errors.review}
           >
-            <FormLabel>Review Body</FormLabel>
+            { 
+              this.state.errors.email
+              ?
+              <Typography variant="body2" style={{color: "red"}}>Email is required</Typography>
+              : null
+            }
             <TextField 
-              id="review-body"
-              label="Review"
-              multiline
-              value={ this.state.review || '' }
-              onChange={e => this.setState({ review: e.target.value })}
+              id="review-email"
+              label="Email"
+              value={this.state.email}
+              onChange={e => this.setState({ email: e.target.value })}
               variant="outlined"
             />
           </FormControl>
-         <Button variant="outlined" onClick={this.handleSubmit.bind(this)}>Submit</Button>
+         </div>
+         <div id="review-overview">
+          <FormControl 
+            required
+            error={this.state.errors.rating}
+          >
+            <FormLabel>Overall Rating:</FormLabel>
+              <RadioGroup 
+                row 
+                id="overall-rating" 
+                aria-label="overall-rating" 
+                name="overall-rating-group"
+                value={ this.state.rating || '' }
+                onChange={ e => this.setState({ rating: e.target.value }) }
+              >
+                <FormControlLabel value='1' control={<Radio size="small" />} label='1' />
+                <FormControlLabel value='2' control={<Radio size="small" />} label='2' />
+                <FormControlLabel value='3' control={<Radio size="small" />} label='3' />
+                <FormControlLabel value='4' control={<Radio size="small" />} label='4' />
+                <FormControlLabel value='5' control={<Radio size="small" />} label='5' />
+              </RadioGroup>
+          </FormControl>
+          <FormControl 
+            required
+            error={this.state.errors.recommend}
+          >
+            <FormLabel>Would you recommend this product?</FormLabel>
+              <RadioGroup 
+                row 
+                id="review-recommend" 
+                aria-label="recommend" 
+                name="recommend-group"
+                value={ this.state.recommend || '' }
+                onClick={e => this.setState({ recommend: e.target.value })}
+              >
+                <FormControlLabel value="Yes" control={<Radio size="small" />} label="yes" />
+                <FormControlLabel value="No" control={<Radio size="small" />} label="no" />
+              </RadioGroup>
+          </FormControl>
+         </div>
+         <div id="review-characteristics">
+          {this.renderCharacteristics()}
+         </div>
+         <div id="review-footer">
+          <FormControl className="review-summary">
+              <TextField 
+                id="review-summary"
+                label="Review Summary"
+                value={this.state.summary}
+                onChange={e => this.setState({ summary: e.target.value })}
+                variant="outlined"
+              />
+            </FormControl>
+            <FormControl
+              required
+              error={this.state.errors.review}
+              className="review-body"
+            >
+              {
+                this.state.errors.review
+                ?
+                <Typography variant="body2" style={{color: "red"}}>Review is required</Typography>
+                : null
+              }
+              <TextField 
+                id="review-body"
+                label="Review"
+                multiline
+                value={ this.state.review || '' }
+                onChange={e => this.setState({ review: e.target.value })}
+                variant="outlined"
+              />
+            </FormControl>
+         </div>
+         <Button id="review-submit" variant="outlined" onClick={this.handleSubmit.bind(this)}>Submit</Button>
        </DialogContent>
       </Dialog>
     )
@@ -178,11 +200,11 @@ class AddReview extends React.Component {
               value={ this.state.characteristics[characteristic].value || '' }
               onChange={e => this.setCharacteristic(characteristic, id, e.target.value)}
             >
-              <FormControlLabel value='1' control={<Radio />} label='1' />
-              <FormControlLabel value='2' control={<Radio />} label='2' />
-              <FormControlLabel value='3' control={<Radio />} label='3' />
-              <FormControlLabel value='4' control={<Radio />} label='4' />
-              <FormControlLabel value='5' control={<Radio />} label='5' />
+              <FormControlLabel value='1' control={<Radio size="small" />} label='1' />
+              <FormControlLabel value='2' control={<Radio size="small" />} label='2' />
+              <FormControlLabel value='3' control={<Radio size="small" />} label='3' />
+              <FormControlLabel value='4' control={<Radio size="small" />} label='4' />
+              <FormControlLabel value='5' control={<Radio size="small" />} label='5' />
             </RadioGroup> 
           </FormControl>
         )
