@@ -26,6 +26,23 @@ body {
   justify-content: space-between;
 }
 
+#reviews-photos-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0.5em 0;
+}
+
+#reviews-photos {
+  display: flex;
+  flex-direction: row;
+}
+
+#reviews-photos img {
+  max-width: 75px;
+  height: auto;
+  object-fit: contain;
+}
+
 .breakdown-number {
   color: black;
 }
@@ -61,8 +78,10 @@ body {
   grid-column-gap: 1em;
 }
 
-.review-footer {
-  padding: 6px 0;
+#review-footer {
+  margin: 1em 2em;
+  display: flex;
+  flex-direction: column;
 }
 
 .review-body {

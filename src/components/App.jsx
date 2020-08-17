@@ -9,7 +9,7 @@ class App extends React.Component {
     super();
 
     this.state = {
-      product_id: Math.floor(Math.random() * 100), //21
+      product_id: 24,// Math.floor(Math.random() * 100), //21
       meta: {},
       reviews: {},
       modalIsOpen: false,
@@ -31,9 +31,13 @@ class App extends React.Component {
   fetchReviews(sortBy = '') {
     let params = '?count=100';
 
-    if(sortBy !== '') params += `sort=${sortBy}`;
+    if(sortBy !== '') params += `&sort=${sortBy}`;
 
-    fetch(`http://52.26.193.201:3000/reviews/${this.state.product_id}/list${params}`)
+    const url = `http://52.26.193.201:3000/reviews/${this.state.product_id}/list${params}`;
+
+    console.log(url)
+
+    fetch(url)
       .then(res => res.json())
       .then(data => {
         this.setState({
@@ -44,7 +48,7 @@ class App extends React.Component {
 
   componentDidMount() {
     this.fetchMetadata();
-    this.fetchReviews();
+    this.fetchReviews('newest');
   }
 
   addReview() {
