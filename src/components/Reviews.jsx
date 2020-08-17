@@ -104,6 +104,19 @@ class Reviews extends React.Component {
                   </Grid>
                   : null
                 }
+                {
+                  photos.length
+                  ?
+                  <div id="reviews-photos-container">
+                    <div>Photos:</div>
+                    <div id="reviews-photos">
+                      {
+                      photos.map(({url}, index) => <img src={url} key={index} />)
+                      }
+                    </div>
+                  </div>
+                  : null
+                }
                 <Grid className="review-footer" item>
                   <Typography variant="body2">
                     Helpful? <Link underline="always" onClick={() => this.markHelpful(review_id)}>Yes</Link>

@@ -25,6 +25,7 @@ class AddReview extends React.Component {
       review: '',
       name: '',
       email: '',
+      photo: '',
       characteristics: {
         Quality: {},
         Fit: {},
@@ -147,7 +148,6 @@ class AddReview extends React.Component {
                 label="Review Summary"
                 value={this.state.summary}
                 onChange={e => this.setState({ summary: e.target.value })}
-                variant="outlined"
               />
             </FormControl>
             <FormControl
@@ -167,9 +167,20 @@ class AddReview extends React.Component {
                 multiline
                 value={ this.state.review || '' }
                 onChange={e => this.setState({ review: e.target.value })}
-                variant="outlined"
               />
+              {
+                this.state.review.length < 50
+                ?
+                <div>{50 - this.state.review.length} more characters needed</div>
+                : null
+              }
             </FormControl>
+              <TextField 
+                id="review-add-photo"
+                label="Link to a photo"
+                value={ this.state.photo || '' }
+                onChange={e => this.setState({ photo: e.target.value })}
+              />
          </div>
          <Button id="review-submit" variant="outlined" onClick={this.handleSubmit.bind(this)}>Submit</Button>
        </DialogContent>
@@ -229,7 +240,8 @@ class AddReview extends React.Component {
       name: this.state.name,
       email: this.state.email,
       recommend: recommend,
-      characteristics: characteristics
+      characteristics: characteristics,
+      photos: [this.state.photo]
     };
     
     const body = JSON.stringify(data);
