@@ -11,7 +11,8 @@ class Reviews extends React.Component {
       showReviews: 2,
       markedHelpful: {},
       reported: {},
-      modalIsOpen: false
+      modalIsOpen: false,
+      showMore: {}
     };
   }
 
@@ -85,7 +86,21 @@ class Reviews extends React.Component {
                   <Typography variant='h4' noWrap>{summary}</Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant='body1'>{body}</Typography>
+                  {
+                    body.length > 250 
+                    ?
+                    <Typography variant="body1" onClick={ () => this.toggleShowMore(review_id)}>
+                      {
+                        this.state.showMore[review_id]
+                        ?
+                        body
+                        :
+                        body.slice(0, 250) + '...show more'
+                      }
+                    </Typography>
+                    :
+                    <Typography variant="body1">{body}</Typography>
+                  }
                 </Grid>
                 {
                   recommend
@@ -164,6 +179,15 @@ class Reviews extends React.Component {
   reportReview(review_id) {
     fetch(`http://52.26.193.201:3000/reviews/report/${review_id}/`, { method: 'PUT' })
       .then(() => this.props.update())
+  }
+
+  toggleShowMore(review_id) {
+    this.setState({
+      showMore: {
+        ...this.state.showMore,
+        [review_id]: !this.state.showMore[review_id]
+      }
+    })
   }
   
 }
