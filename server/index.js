@@ -24,6 +24,11 @@ app.get('/reviews/:product_id/list', (req, res) => {
   // Replace with query to database
   let dummyRes = JSON.parse(JSON.stringify(sampleListRes));
 
+  // remove "reported" reviews
+  dummyRes.results = dummyRes.results.filter((result) => {
+    return !result.reported;
+  });
+
   if (req.query.sort) {
     const sorter = req.query.sort || '';
     if (sorter === 'newest') {
@@ -63,12 +68,17 @@ app.post('/reviews/:product_id', (req, res) => {
 app.put('/reviews/helpful/:review_id', (req, res) => {
   console.log('add helpful to review: ', req.params.review_id);
 
+  // increment helpfulness for review_id in database
+
   res.statusCode = 204;
   res.send('Status: 204 NO CONTENT');
 });
 
 app.put('/reviews/report/:review_id', (req, res) => {
   console.log('report review: ', req.params.review_id);
+
+  // set reported for review_id to true in database
+
   res.statusCode = 204;
   res.send('Status: 204 NO CONTENT');
 });
