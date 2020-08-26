@@ -1,13 +1,13 @@
 import React from 'react'
 import { Rating, useTabContext } from '@material-ui/lab';
-import {  Button, 
-          RadioGroup, 
-          Radio, 
-          Dialog, 
-          DialogTitle, 
-          DialogContent, 
-          DialogContentText, 
-          FormControl, 
+import {  Button,
+          RadioGroup,
+          Radio,
+          Dialog,
+          DialogTitle,
+          DialogContent,
+          DialogContentText,
+          FormControl,
           FormControlLabel,
           FormLabel,
           TextField,
@@ -39,7 +39,7 @@ class AddReview extends React.Component {
 
   componentDidMount() {
     const ignore = ['errors', 'summary']
-    let errors = {}; 
+    let errors = {};
     Object.keys(this.state).forEach(key => {
       if(ignore.includes(key)) return
       errors[key] = 'false';
@@ -51,24 +51,24 @@ class AddReview extends React.Component {
   render() {
     return (
       <Dialog
-        open={this.props.isOpen} 
-        onClose={() => this.props.closeModal()} 
+        open={this.props.isOpen}
+        onClose={() => this.props.closeModal()}
         aria-labelledby="review-title"
         aria-describedby="review-subtitle"
         maxWidth="lg"
       >
-       <DialogTitle>Write Your Review</DialogTitle> 
+       <DialogTitle>Write Your Review</DialogTitle>
        <DialogContent>
          <DialogContentText>About the [product name]</DialogContentText>
        </DialogContent>
        <DialogContent>
          <div id="review-user-info">
-          <FormControl 
+          <FormControl
             required
             error={ this.state.errors.name }
           >
-            { 
-              this.state.errors.name 
+            {
+              this.state.errors.name
               ?
               <Typography variant="body2" style={{color: "red"}}>Name is required</Typography>
               : null
@@ -84,13 +84,13 @@ class AddReview extends React.Component {
           <FormControl
             required
           >
-            { 
+            {
               this.state.errors.email
               ?
               <Typography variant="body2" style={{color: "red"}}>Email is required</Typography>
               : null
             }
-            <TextField 
+            <TextField
               id="review-email"
               label="Email"
               value={this.state.email}
@@ -100,15 +100,15 @@ class AddReview extends React.Component {
           </FormControl>
          </div>
          <div id="review-overview">
-          <FormControl 
+          <FormControl
             required
             error={this.state.errors.rating}
           >
             <FormLabel>Overall Rating:</FormLabel>
-              <RadioGroup 
-                row 
-                id="overall-rating" 
-                aria-label="overall-rating" 
+              <RadioGroup
+                row
+                id="overall-rating"
+                aria-label="overall-rating"
                 name="overall-rating-group"
                 value={ this.state.rating || '' }
                 onChange={ e => this.setState({ rating: e.target.value }) }
@@ -120,15 +120,15 @@ class AddReview extends React.Component {
                 <FormControlLabel value='5' control={<Radio size="small" />} label='5' />
               </RadioGroup>
           </FormControl>
-          <FormControl 
+          <FormControl
             required
             error={this.state.errors.recommend}
           >
             <FormLabel>Would you recommend this product?</FormLabel>
-              <RadioGroup 
-                row 
-                id="review-recommend" 
-                aria-label="recommend" 
+              <RadioGroup
+                row
+                id="review-recommend"
+                aria-label="recommend"
                 name="recommend-group"
                 value={ this.state.recommend || '' }
                 onClick={e => this.setState({ recommend: e.target.value })}
@@ -143,7 +143,7 @@ class AddReview extends React.Component {
          </div>
          <div id="review-footer">
           <FormControl className="review-summary">
-              <TextField 
+              <TextField
                 id="review-summary"
                 label="Review Summary"
                 value={this.state.summary}
@@ -161,7 +161,7 @@ class AddReview extends React.Component {
                 <Typography variant="body2" style={{color: "red"}}>Review is required</Typography>
                 : null
               }
-              <TextField 
+              <TextField
                 id="review-body"
                 label="Review"
                 multiline
@@ -175,7 +175,7 @@ class AddReview extends React.Component {
                 : null
               }
             </FormControl>
-              <TextField 
+              <TextField
                 id="review-add-photo"
                 label="Link to a photo"
                 value={ this.state.photo || '' }
@@ -197,16 +197,16 @@ class AddReview extends React.Component {
     return (
       Object.entries(characteristics).map(([characteristic, {id, value}], index) => {
         return (
-          <FormControl 
+          <FormControl
             key={index}
             required
             error={this.state.errors[characteristic]}
           >
             <FormLabel>{characteristic}</FormLabel>
-            <RadioGroup 
-              row 
-              id={`review-${characteristic}`} 
-              aria-label={characteristic} 
+            <RadioGroup
+              row
+              id={`review-${characteristic}`}
+              aria-label={characteristic}
               name={`${characteristic}-group`}
               value={ this.state.characteristics[characteristic].value || '' }
               onChange={e => this.setCharacteristic(characteristic, id, e.target.value)}
@@ -216,7 +216,7 @@ class AddReview extends React.Component {
               <FormControlLabel value='3' control={<Radio size="small" />} label='3' />
               <FormControlLabel value='4' control={<Radio size="small" />} label='4' />
               <FormControlLabel value='5' control={<Radio size="small" />} label='5' />
-            </RadioGroup> 
+            </RadioGroup>
           </FormControl>
         )
       })
@@ -243,12 +243,12 @@ class AddReview extends React.Component {
       characteristics: characteristics,
       photos: [this.state.photo]
     };
-    
+
     const body = JSON.stringify(data);
 
     const { product_id } = this.props.meta;
 
-    const url = `http://52.26.193.201:3000/reviews/${product_id}`;
+    const url = `/reviews/${product_id}`;
 
     fetch(url, {
       method: 'POST',
@@ -275,7 +275,7 @@ class AddReview extends React.Component {
         ...errors,
         [key]: 'true'
       }
-    } 
+    }
 
     // Make sure user has entered a name
     if(this.state.name.length === 0) setError('name');
