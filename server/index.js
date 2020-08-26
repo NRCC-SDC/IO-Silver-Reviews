@@ -33,13 +33,10 @@ app.get('/reviews/:product_id/list', (req, res) => {
     const sorter = req.query.sort || '';
     if (sorter === 'newest') {
       dummyRes.results.sort(compareDates);
-    } else if (sorter === 'helpful') {
+    } else if (sorter === 'helpful' || sorter === 'relevant') {
       dummyRes.results.sort((a, b) => {
         return b.helpfulness - a.helpfulness;
       })
-    } else if (sorter === 'relevant') {
-      // how do I sort by relevance?
-      console.log('sort by relevance')
     }
   }
 
@@ -48,8 +45,6 @@ app.get('/reviews/:product_id/list', (req, res) => {
   if (dummyRes.results.length > count) {
     dummyRes.results = dummyRes.results.slice(0, count - 1);
   }
-
-  dummyRes.results.forEach((result) => console.log(result.date));
 
   res.send(dummyRes);
 });
