@@ -3,4 +3,4 @@ import ReactDom from 'react-dom';
 import App from './components/App.jsx';
 import css from './styles.css';
 
-ReactDom.render(<App />, document.getElementById('root'));
+ReactDom.render(<App />, document.getElementById('ratings-and-reviews'));
