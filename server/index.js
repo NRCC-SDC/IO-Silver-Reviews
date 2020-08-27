@@ -59,7 +59,7 @@ app.post('/reviews/:product_id', (req, res) => {
   // add body, date, and reported: false to database here
 
   res.statusCode = 201;
-  res.send('Status: 201 CREATED');
+  res.send();
 });
 
 app.put('/reviews/helpful/:review_id', (req, res) => {
@@ -68,7 +68,7 @@ app.put('/reviews/helpful/:review_id', (req, res) => {
   // increment helpfulness for review_id in database
 
   res.statusCode = 204;
-  res.send('Status: 204 NO CONTENT');
+  res.send();
 });
 
 app.put('/reviews/report/:review_id', (req, res) => {
@@ -77,7 +77,7 @@ app.put('/reviews/report/:review_id', (req, res) => {
   // set reported for review_id to true in database
 
   res.statusCode = 204;
-  res.send('Status: 204 NO CONTENT');
+  res.send();
 });
 
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
