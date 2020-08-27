@@ -241,7 +241,7 @@ const sampleListRes = {
       "rating": 5,
       "summary": "These overalls are the best!!! ",
       "recommend": 1,
-      "response": null,
+      "response": "Glad you liked them!",
       "body": "they match my red shirt perfectly! let's go save the princess",
       "date": "2020-08-21T00:00:00.000Z",
       "reviewer_name": "Its me! Mario",
@@ -250,6 +250,10 @@ const sampleListRes = {
         {
           "id": 27151,
           "url": "https://pngimg.com/uploads/mario/mario_PNG88.png"
+        },
+        {
+          "id": 27158,
+          "url": "https://supermariorun.com/assets/img/hero/hero_chara_mario_update_pc.png"
         }
       ]
     },
