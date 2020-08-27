@@ -53,8 +53,10 @@ app.post('/reviews/:product_id', (req, res) => {
   console.log('post url: ', req.originalUrl);
   console.log('params: ', req.params);
   console.log('body: ', req.body);
+  let date = moment().format("YYYY[-]MM[-]DD[T]HH:mm:ss.SSS[Z]");
+  console.log(date);
 
-  // add body to database here
+  // add body, date, and reported: false to database here
 
   res.statusCode = 201;
   res.send('Status: 201 CREATED');
