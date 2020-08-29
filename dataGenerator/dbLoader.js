@@ -51,6 +51,10 @@ Promise.all(promises)
   .then(() => {
     pgClient.end();
   })
+  .catch((err) => {
+    console.log(err);
+    pgClient.end();
+  })
 
 // lineReader.eachLine('dataGenerator/generatedReviews.txt', (line, last) => {
 //   let reviewObj = JSON.parse(line);
