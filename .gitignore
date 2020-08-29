@@ -1,4 +1,7 @@
 node_modules
 coverage
 public/bundle.js
-generatedReviews.txt
+dataGenerator/generatedChars.csv
+dataGenerator/generatedImages.csv
+dataGenerator/generatedReviews.csv
+dataGenerator/generatedRevsChars.csv
