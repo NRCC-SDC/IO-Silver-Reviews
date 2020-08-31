@@ -9,15 +9,15 @@ class Ratings extends React.Component {
 
   // Rendering
   render() {
-    return(
+    return (
       <Grid id="ratings" container item xs={3} direction="column">
-        { this.renderOverview() }
-        { this.renderBreakdown() }
-        { this.renderCharacteristics() }
+        {this.renderOverview()}
+        {this.renderBreakdown()}
+        {this.renderCharacteristics()}
       </Grid>
-    ) 
+    )
   }
-  
+
   renderOverview() {
     const { ratings } = this.props.meta ? this.props.meta : {};
     const rating = this.calcRating(ratings);
@@ -25,11 +25,11 @@ class Ratings extends React.Component {
     return (
       <Grid container item id="overview" alignItems='center'>
         <Grid item xs={3}>
-          <h2 id="rating-number">{ rating ? rating : 'No Reviews' }</h2>
+          <h2 id="rating-number">{rating ? rating : 'No Reviews'}</h2>
         </Grid>
         <Grid item>
-          <Rating 
-            value={ rating ? rating : 0 }
+          <Rating
+            value={rating ? rating : 0}
             precision={0.25}
             readOnly
           />
@@ -48,12 +48,12 @@ class Ratings extends React.Component {
         {
           breakdowns.map((percentage, index) => {
             return (
-              <Grid 
-                container 
-                item 
-                key={index} 
-                className="breakdown-bar" 
-                style={{flexDirection: "row"}}
+              <Grid
+                container
+                item
+                key={index}
+                className="breakdown-bar"
+                style={{ flexDirection: "row" }}
                 alignItems='center'
               >
                 <Grid item md={3}>
@@ -62,7 +62,7 @@ class Ratings extends React.Component {
                   </a>
                 </Grid>
                 <Grid item md={9}>
-                  <LinearProgress 
+                  <LinearProgress
                     variant="determinate"
                     value={percentage}
                   />
@@ -71,20 +71,20 @@ class Ratings extends React.Component {
             )
           })
         }
-        
+
         <Typography variant="body2" id="percent-recommend">
-          { percentRecommend !== undefined
+          {percentRecommend !== undefined
             ? `${percentRecommend}% of users recommend this product`
             : 'Nobody has recommended this product yet'
-          } 
-        
+          }
+
         </Typography>
       </Grid>
     )
   }
 
   renderCharacteristics() {
-    if(Object.keys(this.props.meta).length === 0) return;
+    if (Object.keys(this.props.meta).length === 0) return;
 
     const { characteristics } = this.props.meta.characteristics === undefined ? { characteristics: {} } : this.props.meta;
 
@@ -93,31 +93,32 @@ class Ratings extends React.Component {
       Comfort: ['Poor', 'Perfect'],
       Quality: ['Poor', 'Perfect'],
       Fit: ['Too Tight', 'Perfect', 'Too Baggy'],
-      Length: ['Too Short', 'Perfect', 'Too Long']
+      Length: ['Too Short', 'Perfect', 'Too Long'],
+      Width: ['Too Thin', 'Perfect', 'Too Wide']
     }
 
     return (
       <div id="characteristics">
-        { Object.entries(characteristics).map(([characteristic, {id, value}], index) => {
+        {Object.entries(characteristics).map(([characteristic, { id, value }], index) => {
           const percentage = (value / 5.0) * 100;
 
           return (
             <Grid key={index} container className="characteristic" spacing={2}>
               <Grid item xs={3} className="characteristic-name">{characteristic}</Grid>
               <Grid item xs={9} className="characteristic-bar-container">
-                <div className="characteristic-marker" style={{position: 'relative', left: `${percentage}%`}} />
+                <div className="characteristic-marker" style={{ position: 'relative', left: `${percentage}%` }} />
                 <div className="characteristic-bar" />
                 <div className="characteristic-description-container">
-                  { descriptions[characteristic].map((description, index) => {
+                  {descriptions[characteristic].map((description, index) => {
                     return (
                       <div key={index} className="characteristic-description">{description}</div>
                     )
-                  }) }
+                  })}
                 </div>
               </Grid>
             </Grid>
-            )
-          }) 
+          )
+        })
         }
       </div>
     )
@@ -139,10 +140,10 @@ class Ratings extends React.Component {
     const length = ratingsArray.length;
     const total = ratingsArray.reduce((total, value) => total += value, 0)
     const average = (total / length).toPrecision(2);
-    
+
     return average;
   }
-  
+
   calcBreakdowns(ratings = {}) {
     if (Object.keys(ratings).length === 0) return new Array(5).fill(0);
 
@@ -156,7 +157,7 @@ class Ratings extends React.Component {
       if (ratings[value] === undefined) return 0;
       return (ratings[value] / totalRatings) * 100;
     }
-    
+
     const totalRatings = [1, 2, 3, 4, 5].reduce(findTotal, 0);
 
     return [1, 2, 3, 4, 5].map(calculatePercentage);

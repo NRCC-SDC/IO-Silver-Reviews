@@ -64,7 +64,7 @@ class Reviews extends React.Component {
     return (
       <Grid container item id="reviews-list" direction="column">
         { reviews.map((review, index) => {
-          const { reviewer_name, rating, summary, body, recommend, date, helpfulness, photos, response, review_id } = review;
+          const { name, rating, summary, body, recommend, date, helpfulness, photos, response, id } = review;
           return(
               <Grid key={index} className="user-review" container item direction="column">
                 <Grid container item justify="space-between">
@@ -78,7 +78,7 @@ class Reviews extends React.Component {
                   </Grid>
                   <Grid item>
                     <Typography variant='body2'>
-                      {reviewer_name}, {moment(date).format('MMMM Do YYYY')}
+                      {name}, {moment(date).format('MMMM Do YYYY')}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -89,9 +89,9 @@ class Reviews extends React.Component {
                   {
                     body.length > 250
                     ?
-                    <Typography variant="body1" onClick={ () => this.toggleShowMore(review_id)}>
+                    <Typography variant="body1" onClick={ () => this.toggleShowMore(id)}>
                       {
-                        this.state.showMore[review_id]
+                        this.state.showMore[id]
                         ?
                         body
                         :
@@ -134,9 +134,9 @@ class Reviews extends React.Component {
                 }
                 <Grid className="review-footer" item>
                   <Typography variant="body2">
-                    Helpful? <Link underline="always" onClick={() => this.markHelpful(review_id)}>Yes</Link>
+                    Helpful? <Link underline="always" onClick={() => this.markHelpful(id)}>Yes</Link>
                     <span> ({helpfulness}) </span>
-                    <Link underline="always" onClick={() => this.reportReview(review_id)}>Report</Link>
+                    <Link underline="always" onClick={() => this.reportReview(id)}>Report</Link>
                   </Typography>
                 </Grid>
               </Grid>
@@ -167,25 +167,25 @@ class Reviews extends React.Component {
     });
   }
 
-  markHelpful(review_id) {
-    if (this.state.markedHelpful[review_id] === true) return;
-    fetch(`/reviews/helpful/${review_id}/`, { method: 'PUT' })
+  markHelpful(id) {
+    if (this.state.markedHelpful[id] === true) return;
+    fetch(`/reviews/helpful/${id}/`, { method: 'PUT' })
       .then(() => {
         this.props.update();
-        this.setState({ markedHelpful: {...this.state.markedHelpful, [review_id]: true} })
+        this.setState({ markedHelpful: {...this.state.markedHelpful, [id]: true} })
       });
   }
 
-  reportReview(review_id) {
-    fetch(`/reviews/report/${review_id}/`, { method: 'PUT' })
+  reportReview(id) {
+    fetch(`/reviews/report/${id}/`, { method: 'PUT' })
       .then(() => this.props.update())
   }
 
-  toggleShowMore(review_id) {
+  toggleShowMore(id) {
     this.setState({
       showMore: {
         ...this.state.showMore,
-        [review_id]: !this.state.showMore[review_id]
+        [id]: !this.state.showMore[id]
       }
     })
   }
