@@ -197,6 +197,7 @@ class AddReview extends React.Component {
 
     return (
       Object.entries(characteristics).map(([characteristic, { id, value }], index) => {
+
         return (
           <FormControl
             key={index}
@@ -212,11 +213,16 @@ class AddReview extends React.Component {
               value={characteristics[characteristic].value || ''}
               onChange={e => this.setCharacteristic(characteristic, id, e.target.value)}
             >
-              <FormControlLabel value='1' control={<Radio size="small" />} label='1' />
-              <FormControlLabel value='2' control={<Radio size="small" />} label='2' />
-              <FormControlLabel value='3' control={<Radio size="small" />} label='3' />
-              <FormControlLabel value='4' control={<Radio size="small" />} label='4' />
-              <FormControlLabel value='5' control={<Radio size="small" />} label='5' />
+              <FormControlLabel value='1' control={<Radio size="small"
+                checked={(this.state.characteristics[characteristic] ? this.state.characteristics[characteristic].value === '1' : false)} />} label='1' />
+              <FormControlLabel value='2' control={<Radio size="small"
+                checked={(this.state.characteristics[characteristic] ? this.state.characteristics[characteristic].value === '2' : false)} />} label='2' />
+              <FormControlLabel value='3' control={<Radio size="small"
+                checked={(this.state.characteristics[characteristic] ? this.state.characteristics[characteristic].value === '3' : false)} />} label='3' />
+              <FormControlLabel value='4' control={<Radio size="small"
+                checked={(this.state.characteristics[characteristic] ? this.state.characteristics[characteristic].value === '4' : false)} />} label='4' />
+              <FormControlLabel value='5' control={<Radio size="small"
+                checked={(this.state.characteristics[characteristic] ? this.state.characteristics[characteristic].value === '5' : false)} />} label='5' />
             </RadioGroup>
           </FormControl>
         )
