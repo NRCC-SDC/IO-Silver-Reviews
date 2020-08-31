@@ -1,9 +1,11 @@
 const pg = require('pg');
-const lineReader = require('line-reader');
+const moment = require('moment');
 
 const connectionString = "postgres://noahr@localhost/bsh-rrdb";
 const pgClient = new pg.Client(connectionString);
 pgClient.connect();
+
+let loadStart = moment();
 
 let promises = [];
 // Clear data in tables
@@ -23,25 +25,25 @@ TRUNCATE TABLE reviews_chars
 // Copy Data from CSV files to database
 promises.push(pgClient.query(`
 COPY reviews(id,product_id,summary,body,rating,name,email,date,recommend,helpfulness,response,reported)
-FROM '/Users/noahr/Documents/HRProjects/SDC-Ratings-and-Reviews/dataGenerator/generatedReviews.csv'
+FROM '${__dirname}/generatedReviews.csv'
 DELIMITER ','
 CSV HEADER;
 `))
 promises.push(pgClient.query(`
 COPY chars(id,char_name)
-FROM '/Users/noahr/Documents/HRProjects/SDC-Ratings-and-Reviews/dataGenerator/generatedChars.csv'
+FROM '${__dirname}/generatedChars.csv'
 DELIMITER ','
 CSV HEADER;
 `))
 promises.push(pgClient.query(`
 COPY images(id,url,review_id)
-FROM '/Users/noahr/Documents/HRProjects/SDC-Ratings-and-Reviews/dataGenerator/generatedImages.csv'
+FROM '${__dirname}/generatedImages.csv'
 DELIMITER ','
 CSV HEADER;
 `))
 promises.push(pgClient.query(`
 COPY reviews_chars(id,review_id,char_id,value)
-FROM '/Users/noahr/Documents/HRProjects/SDC-Ratings-and-Reviews/dataGenerator/generatedRevsChars.csv'
+FROM '${__dirname}/generatedRevsChars.csv'
 DELIMITER ','
 CSV HEADER;
 `))
@@ -49,6 +51,10 @@ CSV HEADER;
 
 Promise.all(promises)
   .then(() => {
+    let loadEnd = moment();
+    let loadTime = loadEnd.diff(loadStart);
+    console.log('Loaded in ' + loadTime + ' milliseconds');
+
     pgClient.end();
   })
   .catch((err) => {

@@ -28,11 +28,11 @@ class AddReview extends React.Component {
       email: '',
       photo: '',
       characteristics: {
-        Quality: {},
-        Fit: {},
-        Length: {},
-        Comfort: {},
-        Size: {}
+        // Quality: {},
+        // Fit: {},
+        // Length: {},
+        // Comfort: {},
+        // Size: {}
       },
       errors: {}
     }
@@ -209,7 +209,7 @@ class AddReview extends React.Component {
               id={`review-${characteristic}`}
               aria-label={characteristic}
               name={`${characteristic}-group`}
-              value={this.state.characteristics[characteristic].value || ''}
+              value={characteristics[characteristic].value || ''}
               onChange={e => this.setCharacteristic(characteristic, id, e.target.value)}
             >
               <FormControlLabel value='1' control={<Radio size="small" />} label='1' />

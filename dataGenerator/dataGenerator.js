@@ -2,111 +2,104 @@ const faker = require('faker');
 const fs = require('fs');
 const moment = require('moment');
 
-// var writer = fs.createWriteStream('dataGenerator/generatedReviews.txt', {
-//   flags: 'a' // 'a' means appending (old data will be preserved)
-// })
+let begin = moment();
 
-const reviewWriter = fs.createWriteStream('dataGenerator/generatedReviews.csv')
+// Add headers to csv files
+fs.writeFileSync('dataGenerator/generatedReviews.csv', 'id,product_id,summary,body,rating,name,email,date,recommend,helpfulness,response,reported\n');
 
-const imageWriter = fs.createWriteStream('dataGenerator/generatedImages.csv')
+fs.writeFileSync('dataGenerator/generatedImages.csv', 'id,url,review_id\n');
 
-const revCharWriter = fs.createWriteStream('dataGenerator/generatedRevsChars.csv')
+fs.writeFileSync('dataGenerator/generatedRevsChars.csv', 'id,review_id,char_id,value\n');
 
+// generate characteristics csv
 const charWriter = fs.createWriteStream('dataGenerator/generatedChars.csv');
-
-reviewWriter.write('id,product_id,summary,body,rating,name,email,date,recommend,helpfulness,response,reported\n');
-
-imageWriter.write('id,url,review_id\n')
-
 charWriter.write('id,char_name\n')
-
 let charas = ['Size', 'Width', 'Comfort', 'Quality', 'Length', 'Fit'];
 charas.forEach((char, index) => {
   charWriter.write((index + 1) + ',' + char + '\n');
 })
 charWriter.end();
 
-revCharWriter.write('id,review_id,char_id,value\n');
-
-let imageCount = 1;
-let revCharCount = 1;
-
-// let numOfReviews = 10000000;
-let numOfReviews = 10;
-
-for (let i = 1; i <= numOfReviews; i++) {
-  let dateFormatted = moment(faker.date.past()).format("YYYY[-]MM[-]DD[T]HH:mm:ss.SSS[Z]");
-
-  let reviewData = {
-    id: i, // added automatically with serial
-    product_id: random(0, 1000000),
-    summary: faker.lorem.words(),
-    body: faker.lorem.paragraph(),
-    rating: random(1, 5),
-    name: faker.name.findName(),
-    email: faker.internet.email(),
-    date: dateFormatted,
-    recommend: Boolean(random(0, 1)),
-    helpfulness: random(0, 100),
-    // should have response for 1 in 10 reviews
-    response: random(1, 10) === 5 ? faker.lorem.sentences() : null,
-    // should randomly make 1 in 1000 reviews reported
-    reported: random(1, 1000) === 500
-  };
-
-  let revDataArray = [];
-  for (let key in reviewData) {
-    revDataArray.push(reviewData[key]);
-  }
-
-  for (let j = 0; j < revDataArray.length; j++) {
-    let revData;
-    if (revDataArray[j] === null) {
-      revData = revDataArray[j];
-    } else {
-      revData = revDataArray[j].toString();
-    }
-
-    if (j !== revDataArray.length - 1) {
-      revData += ','
-    }
-
-    reviewWriter.write(revData);
-  }
-
-  reviewWriter.write('\n');
-
-
-  let characteristics = {};
+// generate characteristics for each product
+let products = [];
+for (let x = 1; x <= 1000000; x++) {
+  products[x] = [];
   let numOfChars = random(1, 6);
-  let available = [1, 2, 3, 4, 5, 6]
-  // generate characteristics
+  let available = [1, 2, 3, 4, 5, 6];
   while (numOfChars > 0) {
     let randomIndex = random(0, available.length - 1)
-    let chara = charas[available[randomIndex]];
-    revCharWriter.write(revCharCount + ',' + i + ',' + available[randomIndex] + ',' + random(1, 5) + '\n');
-    revCharCount++;
+    let chara = available[randomIndex];
+    products[x].push(chara);
     available = available.slice(0, randomIndex).concat(available.slice(randomIndex + 1));
     numOfChars--;
   }
+}
 
-  // generate images
-  let numOfImages = random(0, 5);
-  for (let j = 0; j < numOfImages; j++) {
-    imageWriter.write(imageCount + ',' + faker.random.image() + ',' + i + '\n');
-    imageCount++;
+// keeps track of image and revChar ids
+let imageCount = 1;
+let revCharCount = 1;
+
+let numOfReviews = 10000000;
+// let numOfReviews = 1000;
+let numOfBatches = 100;
+
+for (let r = 0; r < numOfBatches; r++) {
+
+  for (let i = 1; i <= numOfReviews / numOfBatches; i++) {
+
+    let dateFormatted = moment(faker.date.past()).format("YYYY[-]MM[-]DD[T]HH:mm:ss.SSS[Z]");
+
+    let reviewData = {
+      id: i + (r * numOfReviews / numOfBatches),
+      product_id: random(1, 1000000),
+      summary: faker.lorem.words(),
+      body: faker.lorem.paragraph(),
+      rating: random(1, 5),
+      name: faker.name.findName(),
+      email: faker.internet.email(),
+      date: dateFormatted,
+      recommend: Boolean(random(0, 1)),
+      helpfulness: random(0, 100),
+      // should have response for 1 in 10 reviews
+      response: random(1, 10) === 5 ? faker.lorem.sentences() : 'null',
+      // should randomly make 1 in 1000 reviews reported
+      reported: random(1, 1000) === 500
+    };
+
+    let reviewDataRow = '';
+    for (let key in reviewData) {
+      reviewDataRow += reviewData[key].toString();
+      if (key !== 'reported') {
+        reviewDataRow += ',';
+      }
+    }
+    fs.appendFileSync('dataGenerator/generatedReviews.csv', (reviewDataRow + '\n'));
+
+    // make values for characteristics
+    let characteristics = products[reviewData.product_id];
+    for (let k = 0; k < characteristics.length; k++) {
+      let revCharDataRow = revCharCount + ',' + reviewData.id + ',' + characteristics[k] + ',' + random(1, 5) + '\n';
+      fs.appendFileSync('dataGenerator/generatedRevsChars.csv', revCharDataRow);
+      revCharCount++;
+    }
+
+    // generate images
+    let numOfImages = random(0, 5);
+    for (let j = 0; j < numOfImages; j++) {
+      let imageDataRow = imageCount + ',' + faker.random.image() + ',' + reviewData.id + '\n';
+      fs.appendFileSync('dataGenerator/generatedImages.csv', imageDataRow);
+      imageCount++;
+    }
+
   }
 
-
-  // // console.log(reviewData);
-  // const reviewDataJSON = JSON.stringify(reviewData);
-  // // load reviewData into file
-  // writer.write(reviewDataJSON + '\n');
+  let batchDone = moment();
+  console.log((r+1) + ' Batches complete and ' + ((r+1) * numOfReviews/numOfBatches)
+    + ' Records Written in ' + batchDone.diff(begin, 'minutes') + ' minutes');
 }
-reviewWriter.end();
-revCharWriter.end();
-imageWriter.end();
 
+let finished = moment();
+console.log('Generated ' + numOfReviews + ' Records in ' + finished.diff(begin, 'minutes', true) + ' minutes');
 
 // helper functions
 function random(start, end) {
