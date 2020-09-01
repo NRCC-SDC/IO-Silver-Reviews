@@ -3,7 +3,7 @@ const pg = require('pg');
 
 const connectionString = "postgres://noahr@localhost/bsh-rrdb";
 
-describe('Query Time Testing', () => {
+xdescribe('Query Time Testing', () => {
 
   test('Get Meta Data Query should take less that 50ms', async () => {
     const pgClient1 = new pg.Client(connectionString);
