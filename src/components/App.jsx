@@ -73,7 +73,7 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state.product_id);
+    // console.log(this.state.product_id);
 
     return (
       <div id="app">

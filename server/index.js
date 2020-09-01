@@ -139,7 +139,7 @@ app.post('/reviews/:product_id', async (req, res) => {
     date,
     Boolean(req.body.recommend),
     false, // reported initially false
-    0
+    0 // helpfulness initially 0
   ];
 
   let insertResponse = await pgClient.query(insertReview, reviewValues);

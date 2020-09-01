@@ -4,6 +4,12 @@ const moment = require('moment');
 
 let begin = moment();
 
+let numOfReviews = 10000000; // 10M
+// let numOfReviews = 1000000; // 1M
+// let numOfReviews = 1000;
+let numOfBatches = 1000;
+let numOfProducts = numOfReviews / 10; // 1M for 10M Reviews, 100K for 1M Reviews, etc
+
 // Add headers to csv files
 fs.writeFileSync('dataGenerator/generatedReviews.csv', 'id,product_id,summary,body,rating,name,email,date,recommend,helpfulness,response,reported\n');
 
@@ -22,7 +28,7 @@ charWriter.end();
 
 // generate characteristics for each product
 let products = [];
-for (let x = 1; x <= 1000000; x++) {
+for (let x = 1; x <= numOfProducts; x++) {
   products[x] = [];
   let numOfChars = random(1, 6);
   let available = [1, 2, 3, 4, 5, 6];
@@ -39,9 +45,7 @@ for (let x = 1; x <= 1000000; x++) {
 let imageCount = 1;
 let revCharCount = 1;
 
-let numOfReviews = 10000000;
-// let numOfReviews = 1000;
-let numOfBatches = 1000;
+
 
 for (let r = 0; r < numOfBatches; r++) {
 
@@ -51,7 +55,7 @@ for (let r = 0; r < numOfBatches; r++) {
 
     let reviewData = {
       id: i + (r * numOfReviews / numOfBatches),
-      product_id: random(1, 1000000),
+      product_id: random(1, numOfProducts),
       summary: faker.lorem.words(),
       body: faker.lorem.paragraph(),
       rating: random(1, 5),
@@ -94,7 +98,7 @@ for (let r = 0; r < numOfBatches; r++) {
   }
 
   let batchDone = moment();
-  console.log(((r+1)/numOfBatches)*100 + '% of Batches complete and ' + ((r+1) * numOfReviews/numOfBatches)
+  console.log(((r + 1) / numOfBatches) * 100 + '% of Batches complete and ' + ((r + 1) * numOfReviews / numOfBatches)
     + ' Records Written in ' + batchDone.diff(begin, 'seconds') + ' seconds');
 }
 
