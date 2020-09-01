@@ -41,7 +41,7 @@ let revCharCount = 1;
 
 let numOfReviews = 10000000;
 // let numOfReviews = 1000;
-let numOfBatches = 100;
+let numOfBatches = 1000;
 
 for (let r = 0; r < numOfBatches; r++) {
 
@@ -94,8 +94,8 @@ for (let r = 0; r < numOfBatches; r++) {
   }
 
   let batchDone = moment();
-  console.log((r+1) + ' Batches complete and ' + ((r+1) * numOfReviews/numOfBatches)
-    + ' Records Written in ' + batchDone.diff(begin, 'minutes') + ' minutes');
+  console.log(((r+1)/numOfBatches)*100 + '% of Batches complete and ' + ((r+1) * numOfReviews/numOfBatches)
+    + ' Records Written in ' + batchDone.diff(begin, 'seconds') + ' seconds');
 }
 
 let finished = moment();

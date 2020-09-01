@@ -47,7 +47,16 @@ FROM '${__dirname}/generatedRevsChars.csv'
 DELIMITER ','
 CSV HEADER;
 `))
-
+// reset sequences to start at correct ids
+promises.push(pgClient.query(`
+SELECT setval('reviews_id_seq', (SELECT MAX(id) FROM reviews) + 1);
+`))
+promises.push(pgClient.query(`
+SELECT setval('images_id_seq', (SELECT MAX(id) FROM images) + 1);
+`))
+promises.push(pgClient.query(`
+SELECT setval('reviews_chars_id_seq', (SELECT MAX(id) FROM reviews_chars) + 1);
+`))
 
 Promise.all(promises)
   .then(() => {
