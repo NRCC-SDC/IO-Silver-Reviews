@@ -20,7 +20,6 @@ Response
 ```json
 {
   "product": "2",
-  "page": 0,
   "count": 5,
   "results": [
     {
