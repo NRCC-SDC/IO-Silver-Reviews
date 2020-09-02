@@ -1,3 +1,4 @@
+require('newrelic');
 const express = require('express');
 const moment = require('moment');
 
@@ -7,7 +8,6 @@ const connectionString = "postgres://noahr@localhost/bsh-rrdb";
 const pgClient = new pg.Client(connectionString);
 pgClient.connect();
 
-
 const app = express();
 const PORT = 3001;
 
@@ -16,10 +16,8 @@ app.use(express.static('public'));
 app.use(express.json());
 
 app.get('/reviews/:product_id/meta', async (req, res) => {
-  // console.log('get url: ', req.originalUrl);
-  // console.log('params: ', req.params);
 
-  let startQuery = moment();
+  // let startQuery = moment();
 
   let metaQuery = `
   SELECT
@@ -37,8 +35,6 @@ app.get('/reviews/:product_id/meta', async (req, res) => {
   `;
 
   let dbResponse = await pgClient.query(metaQuery, [req.params.product_id]);
-
-  // console.log('dbMetaResponse: ', dbResponse.rows);
 
   let metaResData = { product_id: req.params.product_id };
 
@@ -81,54 +77,34 @@ app.get('/reviews/:product_id/meta', async (req, res) => {
 
   metaResData.characteristics = characteristics;
 
+  // let responseReady = moment();
+  // console.log('Meta Query for product_id ' + req.params.product_id + ' took ' + responseReady.diff(startQuery) + ' milliseconds');
 
-  let responseReady = moment();
-  console.log('Meta Query for product_id ' + req.params.product_id + ' took ' + responseReady.diff(startQuery) + ' milliseconds');
-  // console.log('meta: ', metaResData);
-  // Replace sampleMetaRes with query to database
-  // console.log('sample: ', sampleMetaRes);
-  // res.send(sampleMetaRes);
   res.send(metaResData);
 });
 
 app.get('/reviews/:product_id/list', async (req, res) => {
-  // console.log('get url: ', req.originalUrl);
-  // console.log('params: ', req.params);
-  // console.log('query: ', req.query);
-  let startQuery = moment();
+  // let startQuery = Date.now();
 
-  let dbResponse = await pgClient.query('SELECT * FROM reviews WHERE product_id = $1', [req.params.product_id]);
+  let count = req.query.count || 5;
+
+  let sortBy = 'date';
+  if (req.query.sort !== 'newest') {
+    sortBy = 'helpfulness';
+  }
+
+  let dbResponse = await pgClient.query(`
+    SELECT id, product_id, summary, body, response, rating, name, email, date, recommend::int, helpfulness
+    FROM reviews
+    WHERE
+      product_id = $1 AND
+      reported = false
+    ORDER BY ${sortBy} DESC
+    LIMIT $2;
+  `, [req.params.product_id, count]);
 
   let responseData = { product_id: req.params.product_id };
   responseData.results = dbResponse.rows;
-
-  // remove "reported" reviews
-  responseData.results = responseData.results.filter((result) => {
-    return !result.reported;
-  });
-
-  // sort reviews by sorter
-  if (req.query.sort) {
-    const sorter = req.query.sort || '';
-    if (sorter === 'newest') {
-      responseData.results.sort(compareDates);
-    } else if (sorter === 'helpful' || sorter === 'relevant') {
-      responseData.results.sort((a, b) => {
-        return b.helpfulness - a.helpfulness;
-      })
-    }
-  }
-
-  let count = req.query.count || 5;
-  responseData.count = count;
-  if (responseData.results.length > count) {
-    responseData.results = responseData.results.slice(0, count - 1);
-  }
-
-  // change recommend from boolean to 0,1
-  for (let i = 0; i < responseData.results.length; i++) {
-    responseData.results[i].reported = Number(responseData.results[i].reported);
-  }
 
   // get and add image urls
   for (let i = 0; i < responseData.results.length; i++) {
@@ -136,18 +112,17 @@ app.get('/reviews/:product_id/list', async (req, res) => {
     responseData.results[i].photos = dbImageResponse.rows;
   }
 
-  let responseReady = moment();
-  console.log('Reviews Query for product_id ' + req.params.product_id + ' took ' + responseReady.diff(startQuery) + ' milliseconds');
-  // console.log('sampleData: ', sampleListRes);
+  // let responseReady = Date.now();
+  // console.log('Reviews Query for product_id ' + req.params.product_id + ' took ' + (responseReady - startQuery) + ' milliseconds');
+
   res.send(responseData);
 });
 
 app.post('/reviews/:product_id', async (req, res) => {
-  console.log('post url: ', req.originalUrl);
-  console.log('params: ', req.params);
-  console.log('body: ', req.body);
+
+  // let startQuery = Date.now();
+
   let date = moment().format("YYYY[-]MM[-]DD[T]HH:mm:ss.SSS[Z]");
-  // console.log(date);
 
   // add body, date, and reported: false to database here
   let insertReview = 'INSERT INTO reviews ( product_id, summary, body, response, rating, name, email, date, recommend, reported, helpfulness ) VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) RETURNING id';
@@ -163,46 +138,44 @@ app.post('/reviews/:product_id', async (req, res) => {
     date,
     Boolean(req.body.recommend),
     false, // reported initially false
-    0
+    0 // helpfulness initially 0
   ];
 
   let insertResponse = await pgClient.query(insertReview, reviewValues);
 
   let reviewId = insertResponse.rows[0].id;
 
-  console.log('new review id: ', reviewId)
+  let promises = [];
 
   let chars = ['Size', 'Width', 'Comfort', 'Quality', 'Length', 'Fit'];
   let characteristics = req.body.characteristics;
   for (let j = 0; j < chars.length; j++) {
     if (characteristics[chars[j]]) {
-      pgClient.query('INSERT INTO reviews_chars ( review_id, char_id, value ) VALUES ( $1, $2, $3 )', [reviewId, (j + 1), characteristics[chars[j]]])
-        .then((res) => {
-          console.log('Inserted characteristic ' + chars[j] + ' for review ' + reviewId)
-        })
-        .catch((err) => {
-          console.log(err);
-        })
+      promises.push(pgClient.query('INSERT INTO reviews_chars ( review_id, char_id, value ) VALUES ( $1, $2, $3 )', [reviewId, (j + 1), characteristics[chars[j]]]));
     }
   }
 
   let images = req.body.photos;
   for (let x = 0; x < images.length; x++) {
-    pgClient.query('INSERT INTO images ( review_id, url ) VALUES ( $1, $2 )', [reviewId, images[x]])
-      .then((res) => {
-        console.log('Inserted Image ' + x + ' for review ' + reviewId)
-      })
-      .catch((err) => {
-        console.log(err);
-      })
+    promises.push(pgClient.query('INSERT INTO images ( review_id, url ) VALUES ( $1, $2 )', [reviewId, images[x]]));
   }
 
-  res.statusCode = 201;
-  res.send();
+  Promise.all(promises)
+    .then(() => {
+      // console.log('Created review #' + reviewId + ' in ' + (Date.now() - startQuery) + ' milliseconds');
+      res.statusCode = 201;
+      res.send();
+    })
+    .catch((err) => {
+      console.log(err);
+      res.statusCode = 500;
+      res.send();
+    })
+
 });
 
 app.put('/reviews/helpful/:review_id', (req, res) => {
-  let startQuery = moment();
+  // let startQuery = moment();
   // increment helpfulness for review_id in database
   pgClient.query(`
   UPDATE reviews
@@ -210,8 +183,8 @@ app.put('/reviews/helpful/:review_id', (req, res) => {
   WHERE id = $1;
   `, [req.params.review_id])
     .then(() => {
-      let endQuery = moment();
-      console.log('Incremented helpful for review: ' + req.params.review_id + ' in ' + endQuery.diff(startQuery) + ' ms');
+      // let endQuery = moment();
+      // console.log('Incremented helpful for review: ' + req.params.review_id + ' in ' + endQuery.diff(startQuery) + ' ms');
       res.statusCode = 204;
       res.send();
     })
@@ -223,7 +196,7 @@ app.put('/reviews/helpful/:review_id', (req, res) => {
 });
 
 app.put('/reviews/report/:review_id', (req, res) => {
-  let startQuery = moment();
+  // let startQuery = moment();
 
   // set reported for review_id to true in database
   pgClient.query(`
@@ -232,8 +205,8 @@ app.put('/reviews/report/:review_id', (req, res) => {
     WHERE id = $1;
   `, [req.params.review_id])
     .then(() => {
-      let endQuery = moment();
-      console.log('Reported review: ' + req.params.review_id + ' in ' + endQuery.diff(startQuery) + ' ms');
+      // let endQuery = moment();
+      // console.log('Reported review: ' + req.params.review_id + ' in ' + endQuery.diff(startQuery) + ' ms');
       res.statusCode = 204;
       res.send();
     })
@@ -247,16 +220,17 @@ app.put('/reviews/report/:review_id', (req, res) => {
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 
 
-// Helper functions
-const compareDates = (a, b) => {
-  let dateA = moment(a.date);
-  let dateB = moment(b.date);
+// // Helper functions
+// // code not necessary anymore, sorting done in query
+// const compareDates = (a, b) => {
+//   let dateA = moment(a.date);
+//   let dateB = moment(b.date);
 
-  if (dateA > dateB) {
-    return -1;
-  } else {
-    return 0;
-  }
+//   if (dateA > dateB) {
+//     return -1;
+//   } else {
+//     return 0;
+//   }
 
   // old code that works, but is confusing
   // const aYear = Number(a.date.slice(0, 4));
@@ -319,7 +293,7 @@ const compareDates = (a, b) => {
   // } else {
   //   return 1;
   // }
-}
+// }
 
 // sample data
 const sampleMetaRes = {

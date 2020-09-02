@@ -9,7 +9,7 @@ class App extends React.Component {
     super();
 
     this.state = {
-      product_id: 600725, // Math.floor(Math.random() * 1000000) + 1, // generate random product_id between 1 and 1000000
+      product_id: Math.floor(Math.random() * 100000) + 1, // generate random product_id between 1 and 1000000
       meta: {},
       reviews: {},
       modalIsOpen: false,
@@ -73,7 +73,7 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state.product_id);
+    // console.log(this.state.product_id);
 
     return (
       <div id="app">
