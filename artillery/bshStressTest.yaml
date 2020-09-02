@@ -1,0 +1,15 @@
+config:
+  # replace target localhost with ec2 url after deployment
+  target: http://localhost:3001
+  processor: "./artilleryHelpers.js"
+  phases:
+    - duration: 20
+      arrivalRate: 5
+scenarios:
+  - flow:
+      - function: "randomProductId"
+      - get:
+          url: "/reviews/{{ productId }}/meta"
+      - get:
+          url: "/reviews/{{ productId }}/list"
+      - log: "Sent requests to get meta data and review data for {{ productId }}"
