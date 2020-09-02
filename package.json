@@ -29,6 +29,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "express": "^4.17.1",
     "moment": "^2.27.0",
+    "newrelic": "^6.13.0",
     "pg": "^8.3.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

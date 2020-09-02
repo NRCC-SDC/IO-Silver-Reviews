@@ -1,3 +1,4 @@
+require('newrelic');
 const express = require('express');
 const moment = require('moment');
 
@@ -16,7 +17,7 @@ app.use(express.json());
 
 app.get('/reviews/:product_id/meta', async (req, res) => {
 
-  let startQuery = moment();
+  // let startQuery = moment();
 
   let metaQuery = `
   SELECT
@@ -34,8 +35,6 @@ app.get('/reviews/:product_id/meta', async (req, res) => {
   `;
 
   let dbResponse = await pgClient.query(metaQuery, [req.params.product_id]);
-
-  // console.log('dbMetaResponse: ', dbResponse.rows);
 
   let metaResData = { product_id: req.params.product_id };
 
@@ -78,14 +77,14 @@ app.get('/reviews/:product_id/meta', async (req, res) => {
 
   metaResData.characteristics = characteristics;
 
-  let responseReady = moment();
-  console.log('Meta Query for product_id ' + req.params.product_id + ' took ' + responseReady.diff(startQuery) + ' milliseconds');
+  // let responseReady = moment();
+  // console.log('Meta Query for product_id ' + req.params.product_id + ' took ' + responseReady.diff(startQuery) + ' milliseconds');
 
   res.send(metaResData);
 });
 
 app.get('/reviews/:product_id/list', async (req, res) => {
-  let startQuery = Date.now();
+  // let startQuery = Date.now();
 
   let count = req.query.count || 5;
 
@@ -113,15 +112,15 @@ app.get('/reviews/:product_id/list', async (req, res) => {
     responseData.results[i].photos = dbImageResponse.rows;
   }
 
-  let responseReady = Date.now();
-  console.log('Reviews Query for product_id ' + req.params.product_id + ' took ' + (responseReady - startQuery) + ' milliseconds');
+  // let responseReady = Date.now();
+  // console.log('Reviews Query for product_id ' + req.params.product_id + ' took ' + (responseReady - startQuery) + ' milliseconds');
 
   res.send(responseData);
 });
 
 app.post('/reviews/:product_id', async (req, res) => {
 
-  let startQuery = Date.now();
+  // let startQuery = Date.now();
 
   let date = moment().format("YYYY[-]MM[-]DD[T]HH:mm:ss.SSS[Z]");
 
@@ -163,7 +162,7 @@ app.post('/reviews/:product_id', async (req, res) => {
 
   Promise.all(promises)
     .then(() => {
-      console.log('Created review #' + reviewId + ' in ' + (Date.now() - startQuery) + ' milliseconds');
+      // console.log('Created review #' + reviewId + ' in ' + (Date.now() - startQuery) + ' milliseconds');
       res.statusCode = 201;
       res.send();
     })
@@ -176,7 +175,7 @@ app.post('/reviews/:product_id', async (req, res) => {
 });
 
 app.put('/reviews/helpful/:review_id', (req, res) => {
-  let startQuery = moment();
+  // let startQuery = moment();
   // increment helpfulness for review_id in database
   pgClient.query(`
   UPDATE reviews
@@ -184,8 +183,8 @@ app.put('/reviews/helpful/:review_id', (req, res) => {
   WHERE id = $1;
   `, [req.params.review_id])
     .then(() => {
-      let endQuery = moment();
-      console.log('Incremented helpful for review: ' + req.params.review_id + ' in ' + endQuery.diff(startQuery) + ' ms');
+      // let endQuery = moment();
+      // console.log('Incremented helpful for review: ' + req.params.review_id + ' in ' + endQuery.diff(startQuery) + ' ms');
       res.statusCode = 204;
       res.send();
     })
@@ -197,7 +196,7 @@ app.put('/reviews/helpful/:review_id', (req, res) => {
 });
 
 app.put('/reviews/report/:review_id', (req, res) => {
-  let startQuery = moment();
+  // let startQuery = moment();
 
   // set reported for review_id to true in database
   pgClient.query(`
@@ -206,8 +205,8 @@ app.put('/reviews/report/:review_id', (req, res) => {
     WHERE id = $1;
   `, [req.params.review_id])
     .then(() => {
-      let endQuery = moment();
-      console.log('Reported review: ' + req.params.review_id + ' in ' + endQuery.diff(startQuery) + ' ms');
+      // let endQuery = moment();
+      // console.log('Reported review: ' + req.params.review_id + ' in ' + endQuery.diff(startQuery) + ' ms');
       res.statusCode = 204;
       res.send();
     })

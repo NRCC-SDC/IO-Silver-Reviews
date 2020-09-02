@@ -364,17 +364,17 @@ xdescribe('Query Time Testing', () => {
   });
 
   test('Set Reported Query should take less that 50ms', async () => {
-    const pgClient8 = new pg.Client(connectionString);
-    pgClient8.connect();
+    const pgClient9 = new pg.Client(connectionString);
+    pgClient9.connect();
 
     let queryTimes = [];
 
     for (let i = 0; i < 100; i++) {
       // generates review id from last 10% of review ids
-      const maxReviewId = (await pgClient8.query('SELECT MAX(id) FROM reviews;')).rows[0].max;
+      const maxReviewId = (await pgClient9.query('SELECT MAX(id) FROM reviews;')).rows[0].max;
       const lateReviewId = random(Math.floor(maxReviewId * 0.9), maxReviewId);
 
-      const currentReportBool = (await pgClient8.query(`SELECT reported FROM reviews
+      const currentReportBool = (await pgClient9.query(`SELECT reported FROM reviews
       where id = ${lateReviewId};`)).rows[0].reported;
 
       let setReported = `
@@ -385,7 +385,7 @@ xdescribe('Query Time Testing', () => {
 
       const startQuery = Date.now();
 
-      await pgClient8.query(setReported);
+      await pgClient9.query(setReported);
 
       const endQuery = Date.now();
 
@@ -394,7 +394,7 @@ xdescribe('Query Time Testing', () => {
       queryTimes.push(queryTime);
 
       // swap reported back to original
-      await pgClient8.query(`
+      await pgClient9.query(`
       UPDATE reviews
       SET reported = ${currentReportBool}
       WHERE id = ${lateReviewId};
@@ -410,7 +410,7 @@ xdescribe('Query Time Testing', () => {
 
     // expect(avgQueryTime).toBeLessThan(50);  // will likely cause problems with Circle CI
 
-    pgClient8.end();
+    pgClient9.end();
   });
 });
 
