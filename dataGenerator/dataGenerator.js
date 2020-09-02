@@ -4,8 +4,8 @@ const moment = require('moment');
 
 let begin = moment();
 
-// let numOfReviews = 10000000; // 10M
-let numOfReviews = 1000000; // 1M
+let numOfReviews = 10000000; // 10M
+// let numOfReviews = 1000000; // 1M
 // let numOfReviews = 1000;
 let numOfBatches = 1000;
 let numOfProducts = numOfReviews / 10; // 1M for 10M Reviews, 100K for 1M Reviews, etc
@@ -45,9 +45,10 @@ for (let x = 1; x <= numOfProducts; x++) {
 let imageCount = 1;
 let revCharCount = 1;
 
-
-
 for (let r = 0; r < numOfBatches; r++) {
+  let batchReviewRows = '';
+  let batchRevCharRows = '';
+  let batchImageRows = '';
 
   for (let i = 1; i <= numOfReviews / numOfBatches; i++) {
 
@@ -77,13 +78,15 @@ for (let r = 0; r < numOfBatches; r++) {
         reviewDataRow += ',';
       }
     }
-    fs.appendFileSync('dataGenerator/generatedReviews.csv', (reviewDataRow + '\n'));
+    batchReviewRows += (reviewDataRow + '\n');
+    // fs.appendFileSync('dataGenerator/generatedReviews.csv', (reviewDataRow + '\n'));
 
     // make values for characteristics
     let characteristics = products[reviewData.product_id];
     for (let k = 0; k < characteristics.length; k++) {
       let revCharDataRow = revCharCount + ',' + reviewData.id + ',' + characteristics[k] + ',' + random(1, 5) + '\n';
-      fs.appendFileSync('dataGenerator/generatedRevsChars.csv', revCharDataRow);
+      batchRevCharRows += revCharDataRow;
+      // fs.appendFileSync('dataGenerator/generatedRevsChars.csv', revCharDataRow);
       revCharCount++;
     }
 
@@ -91,11 +94,16 @@ for (let r = 0; r < numOfBatches; r++) {
     let numOfImages = random(0, 5);
     for (let j = 0; j < numOfImages; j++) {
       let imageDataRow = imageCount + ',' + faker.random.image() + ',' + reviewData.id + '\n';
-      fs.appendFileSync('dataGenerator/generatedImages.csv', imageDataRow);
+      batchImageRows += imageDataRow;
+      // fs.appendFileSync('dataGenerator/generatedImages.csv', imageDataRow);
       imageCount++;
     }
 
   }
+
+  fs.appendFileSync('dataGenerator/generatedReviews.csv', batchReviewRows);
+  fs.appendFileSync('dataGenerator/generatedRevsChars.csv', batchRevCharRows);
+  fs.appendFileSync('dataGenerator/generatedImages.csv', batchImageRows);
 
   let batchDone = moment();
   console.log((((r + 1) / numOfBatches) * 100).toFixed(1) + '% of Batches complete and ' + ((r + 1) * numOfReviews / numOfBatches)
