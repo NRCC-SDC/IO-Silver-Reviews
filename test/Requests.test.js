@@ -2,7 +2,7 @@ const supertest = require('supertest');
 
 const request = supertest('http://localhost:3001');
 
-describe('Request Testing', () => {
+xdescribe('Request Testing', () => {
   let product_id = random(1, 1000000);
 
   test('/GET Meta Data Route', async () => {
