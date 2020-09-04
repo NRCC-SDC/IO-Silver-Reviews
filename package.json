@@ -53,6 +53,7 @@
     "jest": "^26.2.2",
     "react-test-renderer": "^16.13.1",
     "style-loader": "^1.2.1",
+    "supertest": "^4.0.2",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   }

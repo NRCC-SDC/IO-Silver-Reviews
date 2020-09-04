@@ -8,21 +8,61 @@ pgClient.connect();
 let loadStart = moment();
 
 let promises = [];
-// Clear data in tables
+
+// delete tables
 promises.push(pgClient.query(`
-TRUNCATE TABLE reviews CASCADE
+DROP TABLE IF EXISTS reviews CASCADE
 `))
 promises.push(pgClient.query(`
-TRUNCATE TABLE chars CASCADE
+DROP TABLE IF EXISTS chars CASCADE
 `))
 promises.push(pgClient.query(`
-TRUNCATE TABLE images
+DROP TABLE IF EXISTS images
 `))
 promises.push(pgClient.query(`
-TRUNCATE TABLE reviews_chars
+DROP TABLE IF EXISTS reviews_chars
 `))
 
-// Copy Data from CSV files to database
+// create tables
+promises.push(pgClient.query(`
+CREATE TABLE reviews(
+  id SERIAL PRIMARY KEY,
+  product_id	 INTEGER NOT NULL,
+  summary TEXT NOT NULL,
+  body TEXT NOT NULL,
+  response TEXT,
+  rating SMALLINT NOT NULL,
+  name VARCHAR(70) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  recommend BOOLEAN NOT NULL,
+  reported BOOLEAN NOT NULL,
+  helpfulness INTEGER NOT NULL
+);
+`))
+promises.push(pgClient.query(`
+CREATE TABLE chars(
+  id SERIAL PRIMARY KEY,
+  char_name VARCHAR(10) NOT NULL
+);
+`))
+promises.push(pgClient.query(`
+CREATE TABLE reviews_chars(
+  id SERIAL PRIMARY KEY,
+  review_id INTEGER NOT NULL,
+  char_id SMALLINT NOT NULL,
+  value SMALLINT NOT NULL
+);
+`))
+promises.push(pgClient.query(`
+CREATE TABLE images(
+  id SERIAL PRIMARY KEY,
+  url VARCHAR(500) NOT NULL,
+  review_id INTEGER NOT NULL
+);
+`))
+
+// Copy Data from CSV files to tables
 promises.push(pgClient.query(`
 COPY reviews(id,product_id,summary,body,rating,name,email,date,recommend,helpfulness,response,reported)
 FROM '${__dirname}/generatedReviews.csv'
@@ -47,6 +87,7 @@ FROM '${__dirname}/generatedRevsChars.csv'
 DELIMITER ','
 CSV HEADER;
 `))
+
 // reset sequences to start at correct ids
 promises.push(pgClient.query(`
 SELECT setval('reviews_id_seq', (SELECT MAX(id) FROM reviews) + 1);
@@ -56,6 +97,40 @@ SELECT setval('images_id_seq', (SELECT MAX(id) FROM images) + 1);
 `))
 promises.push(pgClient.query(`
 SELECT setval('reviews_chars_id_seq', (SELECT MAX(id) FROM reviews_chars) + 1);
+`))
+
+// create foreign keys
+promises.push(pgClient.query(`
+ALTER TABLE images
+  ADD CONSTRAINT fk_images_review_id
+  FOREIGN KEY (review_id)
+  REFERENCES reviews(id);
+`))
+promises.push(pgClient.query(`
+ALTER TABLE reviews_chars
+  ADD CONSTRAINT fk_reviews_chars_review_id
+  FOREIGN KEY (review_id)
+  REFERENCES reviews(id);
+`))
+promises.push(pgClient.query(`
+ALTER TABLE reviews_chars
+  ADD CONSTRAINT fk_reviews_chars_char_id
+  FOREIGN KEY (char_id)
+  REFERENCES chars(id);
+`))
+
+// Create indexes
+promises.push(pgClient.query(`
+CREATE INDEX reviews_product_id_index ON reviews(product_id);
+`))
+promises.push(pgClient.query(`
+CREATE INDEX images_review_id_index ON images(review_id);
+`))
+promises.push(pgClient.query(`
+CREATE INDEX revChars_review_id_index ON reviews_chars(review_id);
+`))
+promises.push(pgClient.query(`
+CREATE INDEX revChars_char_id_index ON reviews_chars(char_id);
 `))
 
 Promise.all(promises)
@@ -71,52 +146,3 @@ Promise.all(promises)
     pgClient.end();
   })
 
-// lineReader.eachLine('dataGenerator/generatedReviews.txt', (line, last) => {
-//   let reviewObj = JSON.parse(line);
-
-//   let insertReview = 'INSERT INTO reviews ( product_id, summary, body, response, rating, name, email, date, recommend, reported, helpfulness ) VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11 ) RETURNING id';
-
-//   let reviewValues = [
-//     reviewObj.product_id,
-//     reviewObj.summary,
-//     reviewObj.body,
-//     reviewObj.response,
-//     reviewObj.rating,
-//     reviewObj.name,
-//     reviewObj.email,
-//     reviewObj.date,
-//     Boolean(reviewObj.recommend),
-//     reviewObj.reported,
-//     reviewObj.helpfulness
-//   ];
-
-//   pgClient.query(insertReview, reviewValues)
-//     .then((res) => {
-//       let review_id = res.rows[0].id;
-//       let insertImage = 'INSERT INTO images ( url, review_id ) VALUES ( $1, $2 )';
-
-//       for (let i = 0; i < reviewObj.images.length; i++) {
-//         let imageValues = [reviewObj.images[i], review_id];
-
-//         pgClient.query(insertImage, imageValues);
-//       }
-
-//       let insertChar = 'INSERT INTO chars ( char_name ) VALUES ( $1 ) ON CONFLICT ( char_name ) DO UPDATE SET char_name=EXCLUDED.char_name RETURNING id';
-
-//       for (let char in reviewObj.characteristics) {
-//         pgClient.query(insertChar, [char])
-//           .then((res) => {
-//             let char_id = res.rows[0].id;
-
-//             let insertCharReview = 'INSERT INTO reviews_chars ( review_id, char_id, value ) VALUES ( $1, $2, $3 )';
-
-//             pgClient.query(insertCharReview, [review_id, char_id, reviewObj.characteristics[char]])
-//           })
-//       }
-//     })
-
-//   console.log(last);
-//   if (last) {
-//     console.log('Last Data Loaded');
-//   }
-// });

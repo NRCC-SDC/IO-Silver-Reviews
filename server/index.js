@@ -131,7 +131,7 @@ app.post('/reviews/:product_id', async (req, res) => {
     req.params.product_id,
     req.body.summary,
     req.body.body,
-    req.body.response,
+    null, // response initially null
     req.body.rating,
     req.body.name,
     req.body.email,
@@ -156,6 +156,7 @@ app.post('/reviews/:product_id', async (req, res) => {
   }
 
   let images = req.body.photos;
+
   for (let x = 0; x < images.length; x++) {
     promises.push(pgClient.query('INSERT INTO images ( review_id, url ) VALUES ( $1, $2 )', [reviewId, images[x]]));
   }
@@ -218,7 +219,6 @@ app.put('/reviews/report/:review_id', (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
-
 
 
 // sample data
