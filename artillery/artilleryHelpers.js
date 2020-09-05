@@ -3,7 +3,6 @@ const faker = require('faker');
 
 module.exports = {
   randomProductId,
-  randomPostData,
   prepareJSON,
   randomReviewId
 }
@@ -13,21 +12,17 @@ function randomProductId(context, ee, next) {
   return next();
 }
 
-function randomPostData(context, ee, next) {
-  context.vars.summary = faker.lorem.words();
-  context.vars.body = faker.lorem.paragraph();
-  context.vars.name = faker.name.findName();
-  context.vars.email = faker.internet.email();
-
-  return next();
-}
-
 function randomReviewId(context, ee, next) {
   context.vars.reviewId = random(9000000, 10000000);
   return next();
 }
 
 function prepareJSON(requestParams, context, ee, next) {
+  requestParams.json.summary = faker.lorem.words();
+  requestParams.json.body = faker.lorem.paragraph();
+  requestParams.json.name = faker.name.findName();
+  requestParams.json.email = faker.internet.email();
+
   requestParams.json.rating = random(1, 5);
   requestParams.json.recommend = random(0, 1);
 
@@ -53,6 +48,7 @@ function prepareJSON(requestParams, context, ee, next) {
 
   requestParams.json.photos = photos;
 
+  // console.log(requestParams.json);
   return next();
 }
 

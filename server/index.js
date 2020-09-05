@@ -119,6 +119,7 @@ app.get('/reviews/:product_id/list', async (req, res) => {
 });
 
 app.post('/reviews/:product_id', async (req, res) => {
+  // console.log(req.body);
 
   // let startQuery = Date.now();
 

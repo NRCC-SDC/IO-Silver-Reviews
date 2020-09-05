@@ -1,47 +1,81 @@
 config:
   # replace target localhost with ec2 url after deployment
   target: http://localhost:3001
+  http:
+    pool: 50
   processor: "./artilleryHelpers.js"
   phases:
-    - duration: 60
-      arrivalRate: 10
-      name: 'Warm up'
-    - duration: 120
-      arrivalRate: 10
-      rampTo: 25
-      name: 'Ramp up'
-    - duration: 600
-      arrivalRate: 25
-      name: 'Cruise'
+    - duration: 10
+      arrivalRate: 1
+      name: 'Few Users'
+    # - duration: 60
+    #   arrivalRate: 10
+    #   name: 'Warm up'
+    # - duration: 120
+    #   arrivalRate: 10
+    #   rampTo: 25
+    #   name: 'Ramp up'
+    # - duration: 600
+    #   arrivalRate: 25
+    #   name: 'Cruise'
+    # - duration: 60
+    #   arrivalRate: 30
+    #   name: 'Burst'
+    # - duration: 60
+    #   arrivalRate: 100
+    #   name: 'Super Burst'
 scenarios:
   - flow:
+    # - function: "randomProductId"
+    # - get:
+    #     url: "/reviews/{{ productId }}/meta"
+    # - get:
+    #     url: "/reviews/{{ productId }}/list?count=100&sort=newest"
+    # - get:
+    #     url: "/reviews/{{ productId }}/list?count=100&sort=helpful"
+    # - post:
+    #     url: "/reviews/{{ productId }}"
+    #     beforeRequest: "prepareJSON" # prepares non-string entries for json
+    #     json:
+    #       summary: ""
+    #       body: ""
+    #       rating: ""
+    #       name: ""
+    #       email: ""
+    #       recommend: ""
+    #       characteristics: ""
+    #       photos: ""
+    # - function: "randomReviewId"
+    # - put:
+    #     url: "/reviews/helpful/{{ reviewId }}"
+    # - function: "randomReviewId"
+    # - put:
+    #     url: "/reviews/report/{{ reviewId }}"
+    - loop:
       - function: "randomProductId"
       - get:
           url: "/reviews/{{ productId }}/meta"
       - get:
           url: "/reviews/{{ productId }}/list?count=100&sort=newest"
-      - think: 2
       - get:
           url: "/reviews/{{ productId }}/list?count=100&sort=helpful"
-      # - think: 5
-      # - function: "randomPostData"
-      # - post:
-      #     url: "/reviews/{{ productId }}"
-      #     beforeRequest: "prepareJSON" # prepares non-string entries for json
-      #     json:
-      #       summary: "{{ summary }}"
-      #       body: "{{ body }}"
-      #       rating: ""
-      #       name: "{{ name }}"
-      #       email: "{{ email }}"
-      #       recommend: ""
-      #       characteristics: ""
-      #       photos: ""
-      # - function: "randomReviewId"
-      # - put:
-      #     url: "/reviews/helpful/{{ reviewId }}"
-      # - function: "randomReviewId"
-      # - put:
-      #     url: "/reviews/report/{{ reviewId }}"
-
+      - post:
+          url: "/reviews/{{ productId }}"
+          beforeRequest: "prepareJSON" # prepares non-string entries for json
+          json:
+            summary: ""
+            body: ""
+            rating: ""
+            name: ""
+            email: ""
+            recommend: ""
+            characteristics: ""
+            photos: ""
+      - function: "randomReviewId"
+      - put:
+          url: "/reviews/helpful/{{ reviewId }}"
+      - function: "randomReviewId"
+      - put:
+          url: "/reviews/report/{{ reviewId }}"
+    count: 0
       # find way to have only 1 in 1000 virtual users make a report request
