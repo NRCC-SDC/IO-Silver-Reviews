@@ -1,0 +1,80 @@
+config:
+  # replace target localhost with ec2 url after deployment
+  target: http://localhost:3001
+  http:
+    pool: 50
+  processor: "./artilleryHelpers.js"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: 'Warm up'
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 100
+      name: 'Ramp up'
+    - duration: 240
+      arrivalRate: 100
+      name: 'Cruise'
+    - duration: 60
+      arrivalRate: 100
+      rampTo: 175
+      name: 'Heavy Ramp'
+    - duration: 120
+      arrivalRate: 175
+      name: 'Heavy Sustained'
+    # - duration: 60
+    #   arrivalRate: 150
+    #   rampTo: 200
+    #   name: 'Burst Ramp'
+    # - duration: 120
+    #   arrivalRate: 200
+    #   name: 'Burst Sustained'
+scenarios:
+  - name: 'ArriveAtSite'
+    weight: 10
+    flow:
+      - function: "randomProductId"
+      - get:
+          url: '/'
+      - get:
+          url: "/reviews/{{ productId }}/meta"
+      - get:
+          url: "/reviews/{{ productId }}/list?count=100&sort=newest"
+
+  - name: 'ChangeSortToHelpful/Relevant'
+    weight: 7
+    flow:
+      - function: "randomProductId"
+      - get:
+          url: "/reviews/{{ productId }}/list?count=100&sort=helpful"
+
+  - name: 'PostReview'
+    weight: 4
+    flow:
+      - function: "randomProductId"
+      - post:
+          url: "/reviews/{{ productId }}"
+          beforeRequest: "prepareJSON" # prepares non-string entries for json
+          json:
+            summary: ''
+            body: ''
+            name: ''
+            email: ''
+            rating: ''
+            recommend: ''
+            characteristics: ''
+            photos: ''
+
+  - name: 'MarkReviewHelpful'
+    weight: 6
+    flow:
+      - function: "randomReviewId"
+      - put:
+          url: "/reviews/helpful/{{ reviewId }}"
+
+  - name: 'ReportAReview'
+    weight: 1
+    flow:
+      - function: "randomReviewId"
+      - put:
+          url: "/reviews/report/{{ reviewId }}"

@@ -5,3 +5,5 @@ dataGenerator/generatedChars.csv
 dataGenerator/generatedImages.csv
 dataGenerator/generatedReviews.csv
 dataGenerator/generatedRevsChars.csv
+newrelic_agent.log
+newrelic.js

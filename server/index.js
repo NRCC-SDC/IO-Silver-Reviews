@@ -119,6 +119,7 @@ app.get('/reviews/:product_id/list', async (req, res) => {
 });
 
 app.post('/reviews/:product_id', async (req, res) => {
+  // console.log(req.body);
 
   // let startQuery = Date.now();
 
@@ -131,7 +132,7 @@ app.post('/reviews/:product_id', async (req, res) => {
     req.params.product_id,
     req.body.summary,
     req.body.body,
-    req.body.response,
+    null, // response initially null
     req.body.rating,
     req.body.name,
     req.body.email,
@@ -156,6 +157,7 @@ app.post('/reviews/:product_id', async (req, res) => {
   }
 
   let images = req.body.photos;
+
   for (let x = 0; x < images.length; x++) {
     promises.push(pgClient.query('INSERT INTO images ( review_id, url ) VALUES ( $1, $2 )', [reviewId, images[x]]));
   }
@@ -219,81 +221,6 @@ app.put('/reviews/report/:review_id', (req, res) => {
 
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 
-
-// // Helper functions
-// // code not necessary anymore, sorting done in query
-// const compareDates = (a, b) => {
-//   let dateA = moment(a.date);
-//   let dateB = moment(b.date);
-
-//   if (dateA > dateB) {
-//     return -1;
-//   } else {
-//     return 0;
-//   }
-
-  // old code that works, but is confusing
-  // const aYear = Number(a.date.slice(0, 4));
-  // const bYear = Number(b.date.slice(0, 4));
-
-  // if (aYear > bYear) {
-  //   return -1;
-  // } else if (aYear === bYear) {
-  //   const aMonth = Number(a.date.slice(5, 7));
-  //   const bMonth = Number(b.date.slice(5, 7));
-
-  //   if (aMonth > bMonth) {
-  //     return -1;
-  //   } else if (aMonth === bMonth) {
-  //     const aDay = Number(a.date.slice(8, 10));
-  //     const bDay = Number(b.date.slice(8, 10));
-
-  //     if (aDay > bDay) {
-  //       return -1;
-  //     } else if (aDay === bDay) {
-  //       const aHour = Number(a.date.slice(12, 14));
-  //       const bHour = Number(b.date.slice(12, 14));
-
-  //       if (aHour > bHour) {
-  //         return -1;
-  //       } else if (aHour === bHour) {
-  //         const aMin = Number(a.date.slice(15, 17));
-  //         const bMin = Number(b.date.slice(15, 17));
-
-  //         if (aMin > bMin) {
-  //           return -1;
-  //         } else if (aMin === bMin) {
-  //           const aSec = Number(a.date.slice(18, 24));
-  //           const bSec = Number(b.date.slice(18, 24));
-
-  //           if (aSec > bSec) {
-  //             return -1;
-  //           } else if (aSec === bSec) {
-  //             return 0;
-  //           } else {
-  //             return 1;
-  //           }
-
-  //         } else {
-  //           return 1;
-  //         }
-
-  //       } else {
-  //         return 1;
-  //       }
-
-  //     } else {
-  //       return 1;
-  //     }
-
-  //   } else {
-  //     return 1;
-  //   }
-
-  // } else {
-  //   return 1;
-  // }
-// }
 
 // sample data
 const sampleMetaRes = {
