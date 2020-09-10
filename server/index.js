@@ -5,7 +5,7 @@ const moment = require('moment');
 const pg = require('pg');
 
 const connectionString = "postgres://noahr@localhost/bsh-rrdb";
-// const connectionString = "postgres://ec2-user@localhost/bsh-rrdb";
+// const connectionString = "postgres://postgres@localhost/bshrrdb";
 const pgClient = new pg.Client(connectionString);
 pgClient.connect();
 
