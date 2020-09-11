@@ -4,7 +4,7 @@ const fs = require('fs');
 const copyFrom = require('pg-copy-streams').from;
 
 // const connectionString = "postgres://noahr@localhost/bsh-rrdb";
-const connectionString = "postgres://postgres:bshreviews@3.19.55.222/bshrrdb";
+const connectionString = "postgres://postgres:bshreviews@3.12.229.194/bshrrdb";
 const pgClient = new pg.Client(connectionString);
 pgClient.connect();
 
