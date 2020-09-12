@@ -1,14 +1,14 @@
 config:
-  # replace target localhost with ec2 url after deployment
-  target: http://localhost:3001
+  target: http://ec2-18-220-123-174.us-east-2.compute.amazonaws.com:3001
+  # target: http://localhost:3001
   http:
-    pool: 20
-    # timeout: 10
+    # pool: 20
+    # timeout: 2
   processor: "./artilleryHelpers.js"
   phases:
-    # - duration: 60
-    #   arrivalRate: 10
-    #   name: 'Warm up'
+    - duration: 120
+      arrivalRate: 20
+      name: 'Warm up'
     # - duration: 60
     #   arrivalRate: 10
     #   rampTo: 100
@@ -23,10 +23,10 @@ config:
     # - duration: 120
     #   arrivalRate: 175
     #   name: 'Heavy Sustained'
-    - duration: 30
-      arrivalRate: 10
-      rampTo: 600
-      name: 'Burst Ramp'
+    # - duration: 30
+    #   arrivalRate: 10
+    #   rampTo: 600
+    #   name: 'Burst Ramp'
     # - duration: 60
     #   arrivalRate: 600
     #   name: 'Burst Sustained'
@@ -34,60 +34,111 @@ scenarios:
   - name: 'ArriveAtSite'
     weight: 10
     flow:
-      - loop:
-        - function: "randomProductId"
-        # - get:
-        #     url: '/'
-        - get:
-            url: "/reviews/{{ productId }}/meta"
-        - get:
-            url: "/reviews/{{ productId }}/list?count=100&sort=newest"
-        count: 20
+      - function: "randomProductId"
+      # - get:
+      #     url: '/'
+      - get:
+          url: "/reviews/{{ productId }}/meta"
+      - get:
+          url: "/reviews/{{ productId }}/list?count=100&sort=newest"
 
   - name: 'ChangeSortToHelpful/Relevant'
     weight: 8
     flow:
-      - loop:
-        - function: "randomProductId"
-        - get:
-            url: "/reviews/{{ productId }}/list?count=100&sort=helpful"
-        - get:
-            url: "/reviews/{{ productId }}/list?count=100&sort=newest"
-        count: 50
+      - function: "randomProductId"
+      - get:
+          url: "/reviews/{{ productId }}/list?count=100&sort=helpful"
+      - get:
+          url: "/reviews/{{ productId }}/list?count=100&sort=newest"
 
   - name: 'PostReview'
     weight: 4
     flow:
-      - loop:
-        - function: "randomProductId"
-        - post:
-            url: "/reviews/{{ productId }}"
-            beforeRequest: "prepareJSON" # prepares non-string entries for json
-            json:
-              summary: ''
-              body: ''
-              name: ''
-              email: ''
-              rating: ''
-              recommend: ''
-              characteristics: ''
-              photos: ''
-        count: 30
+      - function: "randomProductId"
+      - post:
+          url: "/reviews/{{ productId }}"
+          beforeRequest: "prepareJSON" # prepares non-string entries for json
+          json:
+            summary: ''
+            body: ''
+            name: ''
+            email: ''
+            rating: ''
+            recommend: ''
+            characteristics: ''
+            photos: ''
 
   - name: 'MarkReviewHelpful'
     weight: 6
     flow:
-      - loop:
         - function: "randomReviewId"
         - put:
             url: "/reviews/helpful/{{ reviewId }}"
-        count: 50
 
   - name: 'ReportAReview'
     weight: 1
     flow:
-      - loop:
-        - function: "randomReviewId"
-        - put:
-            url: "/reviews/report/{{ reviewId }}"
-        count: 20
+      - function: "randomReviewId"
+      - put:
+          url: "/reviews/report/{{ reviewId }}"
+
+  # - name: 'ArriveAtSite'
+  #   weight: 10
+  #   flow:
+  #     - loop:
+  #       - function: "randomProductId"
+  #       # - get:
+  #       #     url: '/'
+  #       - get:
+  #           url: "/reviews/{{ productId }}/meta"
+  #       - get:
+  #           url: "/reviews/{{ productId }}/list?count=100&sort=newest"
+  #       count: 20
+
+  # - name: 'ChangeSortToHelpful/Relevant'
+  #   weight: 8
+  #   flow:
+  #     - loop:
+  #       - function: "randomProductId"
+  #       - get:
+  #           url: "/reviews/{{ productId }}/list?count=100&sort=helpful"
+  #       - get:
+  #           url: "/reviews/{{ productId }}/list?count=100&sort=newest"
+  #       count: 50
+
+  # - name: 'PostReview'
+  #   weight: 4
+  #   flow:
+  #     - loop:
+  #       - function: "randomProductId"
+  #       - post:
+  #           url: "/reviews/{{ productId }}"
+  #           beforeRequest: "prepareJSON" # prepares non-string entries for json
+  #           json:
+  #             summary: ''
+  #             body: ''
+  #             name: ''
+  #             email: ''
+  #             rating: ''
+  #             recommend: ''
+  #             characteristics: ''
+  #             photos: ''
+  #       count: 30
+
+  # - name: 'MarkReviewHelpful'
+  #   weight: 6
+  #   flow:
+  #     - loop:
+  #       - function: "randomReviewId"
+  #       - put:
+  #           url: "/reviews/helpful/{{ reviewId }}"
+  #       count: 50
+
+  # - name: 'ReportAReview'
+  #   weight: 1
+  #   flow:
+  #     - loop:
+  #       - function: "randomReviewId"
+  #       - put:
+  #           url: "/reviews/report/{{ reviewId }}"
+  #       count: 20

@@ -6,10 +6,14 @@ xdescribe('Request Testing', () => {
   let product_id = random(1, 1000000);
 
   test('/GET Meta Data Route', async () => {
+
+    let beforeRequest = Date.now();
+
     let response = await request.get(`/reviews/${product_id}/meta`);
 
+    console.log('Meta Request takes: ' + (Date.now() - beforeRequest) + 'ms');
+
     let body = response.body;
-    // console.log(body);
 
     // check if correct product meta data was returned
     expect(Number(body.product_id)).toBe(product_id);
@@ -47,9 +51,26 @@ xdescribe('Request Testing', () => {
   });
 
   test('/GET Review Data Route', async () => {
+    jest.setTimeout(60000);
+    let times = [];
+
+    for (let i = 0; i < 30; i++) {
+      let timeTestId = random(1, 1000000);
+      let beforeRequest = Date.now();
+
+      await request.get(`/reviews/${timeTestId}/list?count=100&sort=newest`);
+
+      times.push(Date.now() - beforeRequest);
+    }
+
+    let avgTime = times.reduce((sum, time) => sum + time) / times.length;
+    console.log('Reviews Request takes: ' + avgTime + 'ms');
+
     let response = await request.get(`/reviews/${product_id}/list?count=100&sort=newest`);
 
     let body = response.body;
+
+    // console.log('Reviews Response: ', body);
 
     // check if correct product Review data was returned
     expect(Number(body.product_id)).toBe(product_id);
@@ -58,6 +79,7 @@ xdescribe('Request Testing', () => {
 
     if (results.length > 0) {
       let firstResult = results[0];
+      // console.log(firstResult);
 
       // check that correct props exist
       expect(firstResult).toHaveProperty('id');

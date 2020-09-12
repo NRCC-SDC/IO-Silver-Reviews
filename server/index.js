@@ -94,24 +94,46 @@ app.get('/reviews/:product_id/list', async (req, res) => {
     sortBy = 'helpfulness';
   }
 
+  // let dbResponse = await pgClient.query(`
+  //   SELECT id, product_id, summary, body, response, rating, name, email, date, recommend::int, helpfulness
+  //   FROM reviews
+  //   WHERE
+  //     product_id = $1 AND
+  //     reported = false
+  //   ORDER BY ${sortBy} DESC
+  //   LIMIT $2;
+  // `, [req.params.product_id, count]);
+
   let dbResponse = await pgClient.query(`
-    SELECT id, product_id, summary, body, response, rating, name, email, date, recommend::int, helpfulness
-    FROM reviews
-    WHERE
-      product_id = $1 AND
-      reported = false
+    SELECT r.*, r.recommend::int,
+      (SELECT json_agg(img)
+      FROM (
+        SELECT id, url FROM images WHERE review_id = r.id
+      ) img
+    ) AS photos
+    FROM reviews AS r
+    WHERE r.product_id = $1
+    AND r.reported = false
     ORDER BY ${sortBy} DESC
     LIMIT $2;
   `, [req.params.product_id, count]);
 
+  // console.log('dbResponse', dbResponse)
+
   let responseData = { product_id: req.params.product_id };
   responseData.results = dbResponse.rows;
 
-  // get and add image urls
   for (let i = 0; i < responseData.results.length; i++) {
-    let dbImageResponse = await pgClient.query('SELECT id, url FROM images WHERE review_id = $1', [responseData.results[i].id]);
-    responseData.results[i].photos = dbImageResponse.rows;
+    if (!responseData.results[i].photos) {
+      responseData.results[i].photos = [];
+    }
   }
+
+  // // get and add image urls
+  // for (let i = 0; i < responseData.results.length; i++) {
+  //   let dbImageResponse = await pgClient.query('SELECT id, url FROM images WHERE review_id = $1', [responseData.results[i].id]);
+  //   responseData.results[i].photos = dbImageResponse.rows;
+  // }
 
   // let responseReady = Date.now();
   // console.log('Reviews Query for product_id ' + req.params.product_id + ' took ' + (responseReady - startQuery) + ' milliseconds');
@@ -223,141 +245,141 @@ app.put('/reviews/report/:review_id', (req, res) => {
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 
 
-// sample data
-const sampleMetaRes = {
-  "product_id": "24",
-  "ratings": {
-    "1": 2,
-    "2": 2,
-    "4": 4,
-    "5": 14
-  },
-  "recommended": {
-    "0": 3,
-    "1": 19
-  },
-  "characteristics": {
-    "Fit": {
-      "id": 78,
-      "value": "3.7368"
-    },
-    "Length": {
-      "id": 79,
-      "value": "3.7895"
-    },
-    "Comfort": {
-      "id": 80,
-      "value": "4.0000"
-    },
-    "Quality": {
-      "id": 81,
-      "value": "3.8421"
-    }
-  }
-}
+// // sample data
+// const sampleMetaRes = {
+//   "product_id": "24",
+//   "ratings": {
+//     "1": 2,
+//     "2": 2,
+//     "4": 4,
+//     "5": 14
+//   },
+//   "recommended": {
+//     "0": 3,
+//     "1": 19
+//   },
+//   "characteristics": {
+//     "Fit": {
+//       "id": 78,
+//       "value": "3.7368"
+//     },
+//     "Length": {
+//       "id": 79,
+//       "value": "3.7895"
+//     },
+//     "Comfort": {
+//       "id": 80,
+//       "value": "4.0000"
+//     },
+//     "Quality": {
+//       "id": 81,
+//       "value": "3.8421"
+//     }
+//   }
+// }
 
 
-const sampleListRes = {
-  "product": "24",
-  "page": 0,
-  "count": 100,
-  "results": [
-    {
-      "review_id": 57454,
-      "reported": false,
-      "rating": 5,
-      "summary": "TEST",
-      "recommend": 1,
-      "response": null,
-      "body": "ETSTLEKSJTLKJSELKTJLKSEJLKJLKJTL:KSJLKTJLKSEJTLKSJL:KJLK",
-      "date": "2020-08-26T00:00:00.000Z",
-      "reviewer_name": "TEST",
-      "helpfulness": 4,
-      "photos": []
-    },
-    {
-      "review_id": 57455,
-      "reported": false,
-      "rating": 5,
-      "summary": "pretttyyyyyyyyyy good",
-      "recommend": 0,
-      "response": null,
-      "body": "50 characters?????????????????????/???????????????",
-      "date": "2019-08-22T00:00:00.000Z",
-      "reviewer_name": "yes",
-      "helpfulness": 0,
-      "photos": []
-    },
-    {
-      "review_id": 57457,
-      "reported": false,
-      "rating": 1,
-      "summary": "sgsdfgsdfg",
-      "recommend": 1,
-      "response": null,
-      "body": "sdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgadfg",
-      "date": "2020-08-22T00:00:00.000Z",
-      "reviewer_name": "new review ",
-      "helpfulness": 0,
-      "photos": []
-    },
-    {
-      "review_id": 57458,
-      "reported": false,
-      "rating": 5,
-      "summary": "These overalls are the best!!! ",
-      "recommend": 1,
-      "response": "Glad you liked them!",
-      "body": "they match my red shirt perfectly! let's go save the princess",
-      "date": "2020-08-21T00:00:00.000Z",
-      "reviewer_name": "Its me! Mario",
-      "helpfulness": 1,
-      "photos": [
-        {
-          "id": 27151,
-          "url": "https://pngimg.com/uploads/mario/mario_PNG88.png"
-        },
-        {
-          "id": 27158,
-          "url": "https://supermariorun.com/assets/img/hero/hero_chara_mario_update_pc.png"
-        }
-      ]
-    },
-    {
-      "review_id": 57459,
-      "reported": false,
-      "rating": 4,
-      "summary": "these overalls are too short!!! maybe I am just too tall. ",
-      "recommend": 1,
-      "response": null,
-      "body": "these overalls are too short!!! maybe I am just too tall. Mario, you can wear these",
-      "date": "2020-09-22T00:00:00.000Z",
-      "reviewer_name": "Luigi",
-      "helpfulness": 2,
-      "photos": [
-        {
-          "id": 27152,
-          "url": "https://toppng.com/uploads/preview/luigi-nsmbod-super-mario-luigi-11563054900re9hy0bndm.png"
-        }
-      ]
-    },
-    {
-      "review_id": 57460,
-      "reported": true,
-      "rating": 4,
-      "summary": "these overalls are too short!!! maybe I am just too tall. ",
-      "recommend": 1,
-      "response": null,
-      "body": "these overalls are too short!!! maybe I am just too tall. Mario, you can wear these",
-      "date": "2020-08-22T00:00:00.000Z",
-      "reviewer_name": "Luigi",
-      "helpfulness": 0,
-      "photos": [
-        {
-          "id": 27153,
-          "url": "https://toppng.com/uploads/preview/luigi-nsmbod-super-mario-luigi-11563054900re9hy0bndm.png"
-        }
-      ]
-    }
-  ]
-}
+// const sampleListRes = {
+//   "product": "24",
+//   "page": 0,
+//   "count": 100,
+//   "results": [
+//     {
+//       "review_id": 57454,
+//       "reported": false,
+//       "rating": 5,
+//       "summary": "TEST",
+//       "recommend": 1,
+//       "response": null,
+//       "body": "ETSTLEKSJTLKJSELKTJLKSEJLKJLKJTL:KSJLKTJLKSEJTLKSJL:KJLK",
+//       "date": "2020-08-26T00:00:00.000Z",
+//       "reviewer_name": "TEST",
+//       "helpfulness": 4,
+//       "photos": []
+//     },
+//     {
+//       "review_id": 57455,
+//       "reported": false,
+//       "rating": 5,
+//       "summary": "pretttyyyyyyyyyy good",
+//       "recommend": 0,
+//       "response": null,
+//       "body": "50 characters?????????????????????/???????????????",
+//       "date": "2019-08-22T00:00:00.000Z",
+//       "reviewer_name": "yes",
+//       "helpfulness": 0,
+//       "photos": []
+//     },
+//     {
+//       "review_id": 57457,
+//       "reported": false,
+//       "rating": 1,
+//       "summary": "sgsdfgsdfg",
+//       "recommend": 1,
+//       "response": null,
+//       "body": "sdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgsdfgadfg",
+//       "date": "2020-08-22T00:00:00.000Z",
+//       "reviewer_name": "new review ",
+//       "helpfulness": 0,
+//       "photos": []
+//     },
+//     {
+//       "review_id": 57458,
+//       "reported": false,
+//       "rating": 5,
+//       "summary": "These overalls are the best!!! ",
+//       "recommend": 1,
+//       "response": "Glad you liked them!",
+//       "body": "they match my red shirt perfectly! let's go save the princess",
+//       "date": "2020-08-21T00:00:00.000Z",
+//       "reviewer_name": "Its me! Mario",
+//       "helpfulness": 1,
+//       "photos": [
+//         {
+//           "id": 27151,
+//           "url": "https://pngimg.com/uploads/mario/mario_PNG88.png"
+//         },
+//         {
+//           "id": 27158,
+//           "url": "https://supermariorun.com/assets/img/hero/hero_chara_mario_update_pc.png"
+//         }
+//       ]
+//     },
+//     {
+//       "review_id": 57459,
+//       "reported": false,
+//       "rating": 4,
+//       "summary": "these overalls are too short!!! maybe I am just too tall. ",
+//       "recommend": 1,
+//       "response": null,
+//       "body": "these overalls are too short!!! maybe I am just too tall. Mario, you can wear these",
+//       "date": "2020-09-22T00:00:00.000Z",
+//       "reviewer_name": "Luigi",
+//       "helpfulness": 2,
+//       "photos": [
+//         {
+//           "id": 27152,
+//           "url": "https://toppng.com/uploads/preview/luigi-nsmbod-super-mario-luigi-11563054900re9hy0bndm.png"
+//         }
+//       ]
+//     },
+//     {
+//       "review_id": 57460,
+//       "reported": true,
+//       "rating": 4,
+//       "summary": "these overalls are too short!!! maybe I am just too tall. ",
+//       "recommend": 1,
+//       "response": null,
+//       "body": "these overalls are too short!!! maybe I am just too tall. Mario, you can wear these",
+//       "date": "2020-08-22T00:00:00.000Z",
+//       "reviewer_name": "Luigi",
+//       "helpfulness": 0,
+//       "photos": [
+//         {
+//           "id": 27153,
+//           "url": "https://toppng.com/uploads/preview/luigi-nsmbod-super-mario-luigi-11563054900re9hy0bndm.png"
+//         }
+//       ]
+//     }
+//   ]
+// }
