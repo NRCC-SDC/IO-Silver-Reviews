@@ -1,20 +1,21 @@
 config:
-  target: http://ec2-18-220-123-174.us-east-2.compute.amazonaws.com:3001
+  # target: http://3.131.94.4:3001
+  target: http://bsh-greenfield-lb-998580826.us-east-2.elb.amazonaws.com
   # target: http://localhost:3001
   http:
-    # pool: 20
+    pool: 20
     # timeout: 2
   processor: "./artilleryHelpers.js"
   phases:
-    - duration: 120
+    - duration: 60
       arrivalRate: 20
       name: 'Warm up'
     # - duration: 60
-    #   arrivalRate: 10
-    #   rampTo: 100
+    #   arrivalRate: 20
+    #   rampTo: 110
     #   name: 'Ramp up'
-    # - duration: 240
-    #   arrivalRate: 100
+    # - duration: 120
+    #   arrivalRate: 120
     #   name: 'Cruise'
     # - duration: 60
     #   arrivalRate: 100
